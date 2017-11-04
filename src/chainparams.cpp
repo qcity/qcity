@@ -249,10 +249,10 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x43a16a626ef2ffdbe928f2bc26dcd5475c6a1a04f9542dfc6a0a88e5fcf9bd4c"); //8711
 
-        pchMessageStart[0] = 0x76;
-        pchMessageStart[1] = 0x65;
-        pchMessageStart[2] = 0x6e;
-        pchMessageStart[3] = 0x74;
+        pchMessageStart[0] = 0x51;
+        pchMessageStart[1] = 0x43;
+        pchMessageStart[2] = 0x54;
+        pchMessageStart[3] = 0x59;
         nDefaultPort = 13311;
         nPruneAfterHeight = 1000;
 
@@ -271,8 +271,8 @@ public:
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
         vSeeds.push_back(CDNSSeedData("dns001", "qct001.bitchk.com",true));
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,28);//C
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,87);//c
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,30);//C
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,89);//c
 
         
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
@@ -339,10 +339,10 @@ public:
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x00");
 
-        pchMessageStart[0] = 0x76;
-        pchMessageStart[1] = 0x65;
-        pchMessageStart[2] = 0x6e;
-        pchMessageStart[3] = 0x74;
+        pchMessageStart[0] = 0x51;
+        pchMessageStart[1] = 0x43;
+        pchMessageStart[2] = 0x54;
+        pchMessageStart[3] = 0x59;
         nDefaultPort = 13321;
         nPruneAfterHeight = 1000;
 
@@ -376,8 +376,8 @@ public:
             0
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,28);//C
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,87);//c
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,30);//C
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,89);//c
         
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
