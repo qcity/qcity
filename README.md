@@ -3,7 +3,7 @@ Qcity Core integration/staging tree
 
 [![Build Status](https://travis-ci.org/qcity-project/qcity.svg?branch=master)](https://travis-ci.org/qcity-project/qcity)
 
-http://www.qcity.org
+http://www.qcitycoin.org
 
 What is Qcity?
 ----------------
@@ -15,7 +15,7 @@ out collectively by the network. Qcity Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Qcity Core software, see [http://www.qcity.org](http://www.qcity.org).
+the Qcity Core software, see [http://www.qcitycoin.org](http://www.qcitycoin.org).
 
 License
 -------
