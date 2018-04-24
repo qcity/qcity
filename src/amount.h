@@ -30,8 +30,11 @@ extern const std::string CURRENCY_UNIT;
  * */
 static const CAmount MAX_MONEY = 500000000 * COIN;//500,000,000
 static const int BLOCK_HEIGHT_INIT = 10;
+static const int BLOCK_TIME_100 = 1525737600; // utc 2018/05/08 00:00:00
+
 static const CAmount PREMINE_MONEY_COIN =  390000000 * COIN ;//39000000
 static const CAmount BLOCK_REWARD_COIN = 6 * COIN; 
+static const CAmount BLOCK_REWARD_COIN_100 = 0.06 * COIN ; 
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 /**
