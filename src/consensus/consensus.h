@@ -37,15 +37,5 @@ static const int VERSION_BLOCK_SIG =  1024;
 static const int32_t TX_VERSION_STAKE=3;
 
 
-static char * pnSeedOnline_main[] = {
-    "YQw9rPR1cpFLRYeyKgT99NggNFJUifv5T5",
-    "Yidn1vWNioXdcoB1LwxwQiXLWBWhW3Cmov",
-    "YVuDDD2Xyd8T2xvPyH5Z6FMrR6JERFkyhe"
-};
-static char * pnSeedOnline_test[] = {
-    "DKjp6aHVaYj4pvq55bvXn3ztHCuRf7mDd3",// priv key, cMsDP5veTZ3xi6WDMx42A8PiLN4q7Ab4XosNwR9tJfCaRnARsjPM
-    "DNu5hkU6zR67NcMve3y8hm9RxoPRfzRzXX",//cQhUWWb5WcPLvWAmxVb8BmrMsJHXHERwRFxjqJgi2L27xMwnQMbJ
-    "DMsSUUUYJZS6Qetd67QTVpymhMCwxiURMy" // cUoyTGecyA1Reg4NqBmCjFahb6U9tMwiZaHR5oZ8t1ZHWKtqPu2w
-};
 
 #endif // BITCOIN_CONSENSUS_CONSENSUS_H

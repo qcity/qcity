@@ -111,7 +111,7 @@ public:
         consensus.nStakeTimestampMask = 0xf; // 10
         consensus.nProofOfOnlineInterval = 10;// 
         consensus.nStakeMinAge = 8 * 60 * 60; // 8 hours
-
+        consensus.COINBASE_MATURITY = COINBASE_MATURITY;
         // The best chain should have at least this much work.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000006805c7318ce2736c0");
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -214,7 +214,7 @@ public:
         consensus.nStakeTimestampMask = 0xf; // 10
         consensus.nProofOfOnlineInterval = 10;// 
         consensus.nStakeMinAge = 8 * 60 * 60; // 8 hours
-        
+        consensus.COINBASE_MATURITY = 100;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");

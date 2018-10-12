@@ -76,6 +76,7 @@ class CCoins
 public:
     //! whether transaction is a coinbase
     bool fCoinBase;
+    bool fCoinStake;
 
     //! unspent transaction outputs; spent outputs are .IsNull(); spent outputs at the end of the array are dropped
     std::vector<CTxOut> vout;
@@ -89,6 +90,7 @@ public:
 
     void FromTx(const CTransaction &tx, int nHeightIn) {
         fCoinBase = tx.IsCoinBase();
+        fCoinStake = tx.IsCoinStake();
         vout = tx.vout;
         nHeight = nHeightIn;
         nVersion = tx.nVersion;
@@ -128,6 +130,7 @@ public:
 
     void swap(CCoins &to) {
         std::swap(to.fCoinBase, fCoinBase);
+        std::swap(to.fCoinStake, fCoinStake);
         to.vout.swap(vout);
         std::swap(to.nHeight, nHeight);
         std::swap(to.nVersion, nVersion);
@@ -152,7 +155,9 @@ public:
     bool IsCoinBase() const {
         return fCoinBase;
     }
-
+    bool IsCoinStake() const {
+        return fCoinStake;
+    }
     template<typename Stream>
     void Serialize(Stream &s) const {
         unsigned int nMaskSize = 0, nMaskCode = 0;

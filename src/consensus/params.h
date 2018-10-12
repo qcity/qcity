@@ -70,9 +70,10 @@ struct Params {
     int nProofOfOnlineInterval;//
     /* pos */
     unsigned int nStakeMinAge;
-    
+    int COINBASE_MATURITY ;
     bool IsV2(int64_t nTime) const {return nTime >= POO_START_TIME; }
     bool IsPoSV(int64_t nTime) const {return nTime >= POS_START_TIME; }
+    
 };
 } // namespace Consensus
 

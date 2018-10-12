@@ -7,6 +7,7 @@
 
 #include "clientversion.h"
 #include "consensus/consensus.h"
+#include "chainparams.h"
 #include "consensus/validation.h"
 #include "validation.h"
 #include "policy/policy.h"
@@ -698,7 +699,7 @@ void CTxMemPool::removeForReorg(const CCoinsViewCache *pcoins, unsigned int nMem
                     continue;
                 const CCoins *coins = pcoins->AccessCoins(txin.prevout.hash);
                 if (nCheckFrequency != 0) assert(coins);
-                if (!coins || (coins->IsCoinBase() && ((signed long)nMemPoolHeight) - coins->nHeight < COINBASE_MATURITY)) {
+                if (!coins || (coins->IsCoinBase() && ((signed long)nMemPoolHeight) - coins->nHeight < Params().GetConsensus().COINBASE_MATURITY )) {
                     txToRemove.insert(it);
                     break;
                 }
