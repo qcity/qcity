@@ -22,47 +22,15 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return nProofOfWorkLimit;
     }
     
-    // Only change once per difficulty adjustment interval
-    // DifficultyAdjustmentInterval = nPowTargetTimespan (1day, 86400) / nPowTargetSpacing (1min, 60 )  = 1440
-    // 하루의 시간 만큼 예상해서 구동된다.
-    // 난이도 조절이 되지 않는다.
-    // if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)//특정주기에 도달하지 않으면... 매번 동작한다.
-    // {
-    //     if (params.fPowAllowMinDifficultyBlocks) //mainnet false, only test,regnet
-    //     {
-    //         // Special difficulty rule for testnet:
-    //         // we use MinDiffculty for mainnet
-    //         // If the new block's timestamp is more than 2* 10 minutes
-    //         // then allow mining of a min-difficulty block.
-    //         if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*4)//4분... 아차피 동작하지 않지만...
-    //             return nProofOfWorkLimit;
-    //         else
-    //         {
-    //             // Return the last non-special-min-difficulty-rules-block
-    //             const CBlockIndex* pindex = pindexLast;
-    //             while (pindex->pprev && pindex->nHeight % params.DifficultyAdjustmentInterval() != 0 && pindex->nBits == nProofOfWorkLimit)
-    //                 pindex = pindex->pprev;
-    //             return pindex->nBits;
-    //         }
-    //     }
-        
-    //     return pindexLast->nBits;
-    // }
-
     //every time set retarget...
     //
     if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*5){//1min *5 no block, will reset difficulty
-        if(fDebug){ 
-            LogPrint("mine", "%d too old net... gap:%s sec, new:%08x , prev:%08x \n" ,pindexLast->nHeight,
-                pblock->GetBlockTime() - pindexLast->GetBlockTime() , nProofOfWorkLimit,pindexLast->nBits );
-        }
+        
         return nProofOfWorkLimit;
     }
     //too fast
     if (pblock->GetBlockTime() <  ( pindexLast->GetBlockTime() +  params.nPowTargetSpacing/3)){
         unsigned int ret =pindexLast->nBits / 2;
-        if(fDebug)
-            LogPrint("mine", "prevhieght:%d too fast block %08x\n ",pindexLast->nHeight, ret);
         return ret;
     }
     
