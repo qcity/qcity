@@ -14,6 +14,8 @@
 #include "boost/multi_index_container.hpp"
 #include "boost/multi_index/ordered_index.hpp"
 
+#include "wallet/wallet.h"
+
 class CBlockIndex;
 class CChainParams;
 class CReserveKey;
@@ -21,6 +23,12 @@ class CScript;
 class CWallet;
 
 namespace Consensus { struct Params; };
+
+enum BlockTYPE: short {
+    BLOCK_TYPE_POW      =    0,
+    BLOCK_TYPE_POO       =    1,
+    BLOCK_TYPE_POS         =    2
+};
 
 static const bool DEFAULT_PRINTPRIORITY = false;
 
@@ -165,7 +173,7 @@ private:
 public:
     BlockAssembler(const CChainParams& chainparams);
     /** Construct a new block template with coinbase to scriptPubKeyIn */
-    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx=true);
+    std::unique_ptr<CBlockTemplate> CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx=true,BlockTYPE blockType = BlockTYPE::BLOCK_TYPE_POW ,int64_t* pFees=NULL);
 
 private:
     // utility functions

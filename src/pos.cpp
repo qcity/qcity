@@ -350,3 +350,36 @@ CAmount GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, i
 
     return nSubsidy + nFees;
 }
+
+bool CheckStake(CBlock* pblock, CWallet& wallet, const CChainParams& chainparams)
+{
+    uint256 hashBlock = pblock->GetHash();
+
+    if(!pblock->IsProofOfStake())
+        return error("CheckStake() : %s is not a proof-of-stake block", hashBlock.GetHex());
+
+    CValidationState state;
+    // verify hash target and signature of coinstake tx
+    if (!CheckProofOfStake(mapBlockIndex[pblock->hashPrevBlock], *pblock->vtx[1], pblock->nBits, state))
+        return error("CheckStake() : proof-of-stake checking failed");
+
+    //// debug print
+    LogPrintf("%s\n", pblock->ToString());
+    LogPrintf("out %s\n", FormatMoney(pblock->vtx[1]->GetValueOut()));
+
+    // Found a solution
+    {
+        LOCK(cs_main);
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("CheckStake() : generated block is stale");
+       
+        // Process this block the same as if we had received it from another node
+        // CValidationState state;
+        std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
+        if (!ProcessNewBlock(Params(), shared_pblock, true, NULL)){ 
+            return error("BitcoinMiner(pos): ProcessNewBlock, block not accepted");
+        }
+    }
+
+    return true;
+}

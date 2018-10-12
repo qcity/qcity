@@ -20,6 +20,8 @@
 #include "script/standard.h"
 #include "utilstrencodings.h"
 
+#include "consensus/tx_verify.h"
+
 #include <map>
 #include <string>
 

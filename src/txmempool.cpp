@@ -19,6 +19,8 @@
 #include "utiltime.h"
 #include "version.h"
 
+#include "consensus/tx_verify.h"
+
 using namespace std;
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& _tx, const CAmount& _nFee,

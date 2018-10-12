@@ -198,6 +198,10 @@ public:
     unsigned int nTime;
     unsigned int nBits;
     unsigned int nNonce;
+    
+    std::vector<unsigned char> vchBlockSig;
+    COutPoint prevoutStake;
+    uint256 nStakeModifier;
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     int32_t nSequenceId;
@@ -228,6 +232,10 @@ public:
         nNonce         = 0;
 
         nMoneySupply = 0;
+
+        vchBlockSig.clear();
+        nStakeModifier = uint256();
+        prevoutStake.SetNull();
     }
 
     CBlockIndex()
@@ -244,6 +252,10 @@ public:
         nTime          = block.nTime;
         nBits          = block.nBits;
         nNonce         = block.nNonce;
+
+        nStakeModifier = uint256();
+        prevoutStake   = block.prevoutStake; 
+        vchBlockSig    = block.vchBlockSig; 
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -274,6 +286,9 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
+
+        block.vchBlockSig    = vchBlockSig;
+        block.prevoutStake   = prevoutStake;
         return block;
     }
 
@@ -296,7 +311,11 @@ public:
     {
         return (int64_t)nTimeMax;
     }
-
+    
+    int64_t GetPastTimeLimit() const
+    {
+        return GetBlockTime();
+    }
     enum { nMedianTimeSpan=11 };
 
     int64_t GetMedianTimePast() const
@@ -313,13 +332,27 @@ public:
         return pbegin[(pend - pbegin)/2];
     }
 
+    virtual bool IsProofOfStake() const
+    {
+        return !prevoutStake.IsNull();
+    }
+    virtual bool IsProofOfOnline() const
+    {
+        return prevoutStake.IsNull()&&vchBlockSig.size()>0;
+    }
+    virtual bool IsProofOfWork() const
+    {
+        return !IsProofOfStake()&&!IsProofOfStake();
+    }
+
     std::string ToString() const
     {
-        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, nMoneySupply=%s)",
+        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, nMoneySupply=%s ,type=%s)",
             pprev, nHeight,
             hashMerkleRoot.ToString(),
             GetBlockHash().ToString(),
-            FormatMoney(nMoneySupply));
+            FormatMoney(nMoneySupply),
+            IsProofOfStake()?"PoS":IsProofOfOnline()?"PoO":"PoW");
     }
 
     //! Check whether this block index entry is valid up to the passed validity level.
@@ -397,6 +430,11 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
         READWRITE(nMoneySupply);
+        if(nTime >= POO_START_TIME &&(nVersion &VERSION_BLOCK_SIG)){ 
+            READWRITE(vchBlockSig);
+            READWRITE(nStakeModifier);
+            READWRITE(prevoutStake);
+        }
     }
 
     uint256 GetBlockHash() const
@@ -408,6 +446,8 @@ public:
         block.nTime           = nTime;
         block.nBits           = nBits;
         block.nNonce          = nNonce;
+        block.vchBlockSig     = vchBlockSig;
+        block.prevoutStake    = prevoutStake;
         return block.GetHash();
     }
 

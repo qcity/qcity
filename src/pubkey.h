@@ -188,6 +188,10 @@ public:
 
     //! Derive BIP32 child pubkey.
     bool Derive(CPubKey& pubkeyChild, ChainCode &ccChild, unsigned int nChild, const ChainCode& cc) const;
+    std::vector<unsigned char> getvch() const
+    {
+        return std::vector<unsigned char>(begin(), end());
+    }
 };
 
 struct CExtPubKey {

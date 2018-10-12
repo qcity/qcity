@@ -15,6 +15,8 @@
 #include "utiltime.h"
 #include "wallet/wallet.h"
 
+#include "consensus/tx_verify.h"
+
 #include <atomic>
 
 #include <boost/version.hpp>

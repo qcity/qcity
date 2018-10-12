@@ -14,6 +14,7 @@
 #include "timedata.h"
 #include "chainparams.h"
 #include "script/sign.h"
+#include "wallet/wallet.h"
 #include <stdint.h>
 
 using namespace std;
@@ -45,4 +46,5 @@ bool GetCoinAge(const CTransaction& tx,  uint64_t& nCoinAge);
 bool TransactionGetCoinAge(CTransaction& transaction, uint64_t& nCoinAge);
 
 CAmount GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees);
+bool CheckStake(CBlock* pblock, CWallet& wallet, const CChainParams& chainparams);
 #endif // COIN_POS_H

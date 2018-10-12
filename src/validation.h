@@ -18,6 +18,9 @@
 #include "sync.h"
 #include "versionbits.h"
 
+#include "txdb.h"
+#include "util.h"
+
 #include <algorithm>
 #include <exception>
 #include <map>
@@ -31,6 +34,8 @@
 
 #include <boost/unordered_map.hpp>
 #include <boost/filesystem/path.hpp>
+
+
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -853,21 +858,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight);
 
 /** Transaction validation functions */
-
-/** Context-independent validity checks */
-bool CheckTransaction(const CTransaction& tx, CValidationState& state, bool fCheckDuplicateInputs=true);
-
-namespace Consensus {
-
-/**
- * Check whether all inputs of this transaction are valid (no double spends and amounts)
- * This does not modify the UTXO set. This does not check scripts and sigs.
- * Preconditions: tx.IsCoinBase() is false.
- */
-bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight);
-
-} // namespace Consensus
-
+ 
 /**
  * Check if transaction is final and can be included in a block with the
  * specified height and time. Consensus critical.
@@ -955,6 +946,10 @@ bool GetAddressUnspent(uint160 addressHash, int type, std::vector<std::pair<CAdd
 bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos, const CMessageHeader::MessageStartChars& messageStart);
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus::Params& consensusParams);
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus::Params& consensusParams);
+
+bool ReadFromDisk(CMutableTransaction& tx, CDiskTxPos& txindex, CBlockTreeDB& txdb, COutPoint prevout);
+bool ReadFromDisk(CMutableTransaction& tx, CDiskTxPos& txindex);
+bool ReadBlockFromDiskByTx(CBlock& block,CBlockTreeDB& txdb, uint256 txHash);
 
 /** Functions for validating blocks and updating the block tree */
 

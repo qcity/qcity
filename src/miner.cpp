@@ -26,6 +26,10 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 
+#include "consensus/tx_verify.h"
+#include "pos.h"
+#include "compat.h"
+
 #include <algorithm>
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -47,6 +51,9 @@ uint64_t nLastBlockTx = 0;
 uint64_t nLastBlockSize = 0;
 uint64_t nLastBlockWeight = 0;
 
+//POS
+int64_t nLastCoinStakeSearchInterval = 0;
+unsigned int nMinerSleep = 1000;//5초 
 class ScoreCompare
 {
 public:
@@ -130,7 +137,7 @@ void BlockAssembler::resetBlock()
     blockFinished = false;
 }
 
-std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx)
+std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx,BlockTYPE blockType,CAmount* pFees)
 {
     int64_t nTimeStart = GetTimeMicros();
 
@@ -648,3 +655,87 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
     pblock->vtx[0] = MakeTransactionRef(std::move(txCoinbase));
     pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
 }
+
+
+
+
+void ThreadStakeMiner(CWallet *pwallet, const CChainParams& chainparams)
+{
+    LogPrintf("staking start....");
+
+    SetThreadPriority(THREAD_PRIORITY_LOWEST);
+
+    // Make this thread recognisable as the mining thread
+    RenameThread("pos-miner");
+
+    CReserveKey reservekey(pwallet);
+
+    bool fTryToSync = true;
+    
+    int nCount =0;
+    while (true){
+        if(GetTime() < POS_START_TIME ) {
+            DbgMsg("SLEPP POS NOT ACTIVE...");
+            MilliSleep(5000);
+            continue;
+        }
+        while (pwallet->IsLocked()){
+            nLastCoinStakeSearchInterval = 0;
+            MilliSleep(1000);
+        }
+
+        
+        while (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) < 1 || IsInitialBlockDownload()){
+            nLastCoinStakeSearchInterval = 0;
+            fTryToSync = true;
+            MilliSleep(1000);
+        }
+        if(Params().NetworkIDString() != CBaseChainParams::TESTNET) { 
+            if (fTryToSync){
+                fTryToSync = false;
+                //연결수가 3보가 작거나, 동기화 시간이 10 분을 넘었으면 1분간 쉰다.
+                if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL)  < 3 || pindexBestHeader->GetBlockTime() < GetTime() - 10 * 60){
+                    MilliSleep(60000);
+                    continue;
+                }
+            }
+        }
+        CBlockIndex* pindexPrev = chainActive.Tip();
+        if( ((pindexPrev->nHeight +1)  % chainparams.GetConsensus().nProofOfOnlineInterval) == 0){
+            DbgMsg("skip online block. %d %d " , pindexPrev->nHeight ,chainparams.GetConsensus().nProofOfOnlineInterval);
+            MilliSleep(1000 * 15);
+            continue;
+        }
+        if(!pwallet->HaveAvailableCoinsForStaking()) {
+            MilliSleep(nMinerSleep);
+            continue;
+        }
+        //
+        // Create new block
+        //
+        int64_t nFees;
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock( reservekey.reserveScript,true,BlockTYPE::BLOCK_TYPE_POS, &nFees));
+        //std::unique_ptr<CBlockTemplate> pblocktemplate(CreateNewBlock(chainparams, reservekey.reserveScript, &nFees, true));
+        if (!pblocktemplate.get())
+             return;
+
+        CBlock *pblock = &pblocktemplate->block;
+        // Trying to sign a block
+        if (pwallet->SignPoSBlock(*pblock, *pwallet, nFees))
+        {
+            SetThreadPriority(THREAD_PRIORITY_NORMAL);
+            if (chainActive.Tip()->GetBlockHash() != pblock->hashPrevBlock) {
+                //another block was received while building ours, scrap progress
+                LogPrintf("ThreadStakeMiner(): Valid future PoS block was orphaned before becoming valid");
+                continue;
+            }
+            CheckStake(pblock, *pwallet, chainparams);
+            SetThreadPriority(THREAD_PRIORITY_LOWEST);
+            MilliSleep(nMinerSleep );
+        }
+        else { 
+            MilliSleep(nMinerSleep );
+        }
+    }
+}
+ 
