@@ -26,12 +26,13 @@ uint256 CBlockHeader::GetPoWHash() const
 std::string CBlock::ToString() const
 {
     std::stringstream s;
-    s << strprintf("CBlock(hash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u, vtx=%u)\n",
+    s << strprintf("CBlock(hash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u,blockType=%s vtx=%u)\n",
         GetHash().ToString(),
         nVersion,
         hashPrevBlock.ToString(),
         hashMerkleRoot.ToString(),
         nTime, nBits, nNonce,
+        IsProofOfOnline()?"PoO":IsProofOfStake()?"PoS":"PoW",
         vtx.size());
     for (unsigned int i = 0; i < vtx.size(); i++)
     {
@@ -47,4 +48,9 @@ int64_t GetBlockWeight(const CBlock& block)
     // is equal to total_size - stripped_size, this formula is identical to:
     // weight = (stripped_size * 3) + total_size.
     return ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR - 1) + ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION);
+}
+
+uint256 CBlockHeader::GetHashWithoutSign() const
+{
+    return SerializeHash(*this, SER_GETHASH | SER_WITHOUT_SIGNATURE);
 }
