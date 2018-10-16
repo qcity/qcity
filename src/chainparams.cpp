@@ -1,5 +1,5 @@
-// Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
+// Copyright (c) 2010 Satoshi Nakamoto
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -224,8 +224,8 @@ public:
         consensus.nStakeMinAge = 8 * 60 * 60; // 8 hours
         consensus.COINBASE_MATURITY = COINBASE_MATURITY / 10; // 500 / 10 = 50 for fast test
 
-        consensus.POO_START_TIME = 1539583200; // 10/15/2018 @ 6:00:00   gmt +9( seoul 10/15/2018 15:00:00)
-        consensus.POS_START_TIME = 1539680400; // 10/15/2018 @ 9:00:00   gmt +9( seoul 10/15/2018 18:00:00)
+        consensus.POO_START_TIME = 2539583200; // 10/15/2018 @ 6:00:00   gmt +9( seoul 10/15/2018 15:00:00)
+        consensus.POS_START_TIME = 1539583200; // 10/15/2018 @ 9:00:00   gmt +9( seoul 10/15/2018 18:00:00)
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");

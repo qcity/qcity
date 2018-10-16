@@ -39,4 +39,5 @@ void CachePoOKernel(std::map<COutPoint, CStakeCache>& cache, const COutPoint& pr
 bool CheckBlockSignature(const CBlock& block);
 /** check provid online key **/
 bool IsOnlineKey(CPubKey& pubkey);
+bool CheckOnline(CBlock* pblock, CWallet& wallet, const CChainParams& chainparams);
 #endif

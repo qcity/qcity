@@ -264,7 +264,6 @@ bool GetCoinAge(const CTransaction& tx,  uint64_t& nCoinAge)
         }
         // prev have not time...
         if(txPrev.nTime <=0 ) { 
-            DbgMsg("xxxxx %s" , txPrev.ToString());
             CBlock prvblock;
             if(!ReadBlockFromDiskByTx(prvblock ,*pblocktree ,txPrev.GetHash() )){
                 txPrev.nTime = Params().GenesisBlock().GetBlockTime();

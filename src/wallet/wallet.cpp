@@ -25,9 +25,8 @@
 #include "util.h"
 #include "ui_interface.h"
 #include "utilmoneystr.h"
-
+#include "poo.h"
 #include "pos.h"
-#include "consensus/tx_verify.h"
 #include "consensus/merkle.h"
 
 #include <assert.h>
@@ -1525,6 +1524,9 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
     for (unsigned int i = 0; i < tx->vout.size(); ++i)
     {
         const CTxOut& txout = tx->vout[i];
+        // Skip special stake out
+        if (txout.scriptPubKey.empty())
+            continue;
         isminetype fIsMine = pwallet->IsMine(txout);
         // Only need to handle txouts if AT LEAST one of these is true:
         //   1) they debit from us (sent)
@@ -1800,7 +1802,7 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache) const
         return 0;
 
     // Must wait until coinbase is safely deep enough in the chain before valuing it
-    if (IsCoinBase() && GetBlocksToMaturity() > 0)
+    if ( (IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
         return 0;
 
     if (fUseCache && fAvailableCreditCached)
@@ -4031,7 +4033,7 @@ bool CMerkleTx::AcceptToMemoryPool(const CAmount& nAbsurdFee, CValidationState& 
     return ::AcceptToMemoryPool(mempool, state, tx, true, NULL, NULL, false, nAbsurdFee);
 }
 
-
+ 
 bool CWallet::GetOnlineKey(CKeyID& keyID,CKey& vchSecret)
 {
      
@@ -4146,9 +4148,8 @@ bool CWallet::CreateCoinOnline(const CKeyStore& keystore, unsigned int nBits, in
     return true;
 }
 
-// For PoS
 #ifdef ENABLE_WALLET
-
+// original novacoin: attempt to generate suitable proof-of-stake
 // poo modify first input
 bool CWallet::SignPoOBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
 {
@@ -4219,6 +4220,7 @@ bool CWallet::SignPoOBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
     }
     return false;
 }
+
 // original novacoin: attempt to generate suitable proof-of-stake
 // poo modify first input
 bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
@@ -4373,7 +4375,6 @@ bool CWallet::SelectCoinsForStaking(CAmount& nTargetValue,   std::set<std::pair<
             nValueRet += coin.first;
         }
     }
-    DbgMsg("Stake tx count :%d" , setCoinsRet.size());
     return true;
 }
 

@@ -8,12 +8,13 @@
 
 #include "arith_uint256.h"
 #include "primitives/block.h"
+
 #include "pow.h"
 #include "tinyformat.h"
 #include "uint256.h"
 #include "utilmoneystr.h"
 #include <vector>
-
+#include "chainparams.h"
 class CBlockFileInfo
 {
 public:
@@ -145,7 +146,9 @@ enum BlockStatus: uint32_t {
     BLOCK_FAILED_CHILD       =   64, //!< descends from failed block
     BLOCK_FAILED_MASK        =   BLOCK_FAILED_VALID | BLOCK_FAILED_CHILD,
 
-    BLOCK_OPT_WITNESS       =   128, //!< block data in blk*.data was received with a witness-enforcing client
+    BLOCK_OPT_WITNESS        =   128, //!< block data in blk*.data was received with a witness-enforcing client
+    BLOCK_PROOF_OF_ONLINE    =   256, //
+    BLOCK_PROOF_OF_STAKE     =   512, //
 };
 
 /** The block chain is a tree shaped structure starting with the
@@ -200,6 +203,7 @@ public:
     unsigned int nNonce;
     
     std::vector<unsigned char> vchBlockSig;
+    
     COutPoint prevoutStake;
     uint256 nStakeModifier;
 
@@ -232,7 +236,7 @@ public:
         nNonce         = 0;
 
         nMoneySupply = 0;
-
+        // For sig
         vchBlockSig.clear();
         nStakeModifier = uint256();
         prevoutStake.SetNull();
@@ -256,6 +260,7 @@ public:
         nStakeModifier = uint256();
         prevoutStake   = block.prevoutStake; 
         vchBlockSig    = block.vchBlockSig; 
+        
     }
 
     CDiskBlockPos GetBlockPos() const {
@@ -286,9 +291,9 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
-
         block.vchBlockSig    = vchBlockSig;
         block.prevoutStake   = prevoutStake;
+        
         return block;
     }
 
@@ -311,7 +316,6 @@ public:
     {
         return (int64_t)nTimeMax;
     }
-    
     int64_t GetPastTimeLimit() const
     {
         return GetBlockTime();
@@ -331,7 +335,6 @@ public:
         std::sort(pbegin, pend);
         return pbegin[(pend - pbegin)/2];
     }
-
     virtual bool IsProofOfStake() const
     {
         return !prevoutStake.IsNull();
@@ -344,10 +347,10 @@ public:
     {
         return !IsProofOfStake()&&!IsProofOfStake();
     }
-
+     
     std::string ToString() const
     {
-        return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, nMoneySupply=%s ,type=%s)",
+       return strprintf("CBlockIndex(pprev=%p, nHeight=%d, merkle=%s, hashBlock=%s, nMoneySupply=%s ,type=%s)",
             pprev, nHeight,
             hashMerkleRoot.ToString(),
             GetBlockHash().ToString(),
@@ -430,7 +433,7 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
         READWRITE(nMoneySupply);
-        if(nTime >= POO_START_TIME &&(this->nVersion &VERSION_BLOCK_SIG)){ 
+        if((this->nVersion &VERSION_BLOCK_SIG) ){ 
             READWRITE(vchBlockSig);
             READWRITE(nStakeModifier);
             READWRITE(prevoutStake);
@@ -522,5 +525,7 @@ public:
     /** Find the earliest block with timestamp equal or greater than the given. */
     CBlockIndex* FindEarliestAtLeast(int64_t nTime) const;
 };
+
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
+
 #endif // BITCOIN_CHAIN_H

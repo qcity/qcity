@@ -134,3 +134,38 @@ bool CheckCoinOnlineTimestamp(int64_t nTimeBlock)
 {
     return CheckCoinOnlineTimestamp(nTimeBlock, nTimeBlock);
 }
+/**
+ * block 서명이 pool 의 한명인가?
+ * 블럭의 보상이 넘었는가?
+ * 블럭의 
+ */ 
+bool CheckOnline(CBlock* pblock, CWallet& wallet, const CChainParams& chainparams)
+{
+    uint256 hashBlock = pblock->GetHash();
+
+    if(!pblock->IsProofOfOnline()){ 
+        return error("CheckOnline() : %s is not a proof-of-online block", hashBlock.GetHex());
+    }
+
+    CValidationState state;
+    // verify hash target and signature of coinstake tx
+    // poo not need hash target and signature
+    // pos is vin to vout must check signature but poo tx is like coinbase
+    if (!CheckProofOfOnline(mapBlockIndex[pblock->hashPrevBlock], *pblock->vtx[0], pblock->nBits, state))
+        return error("CheckOnline() : proof-of-online checking failed");
+
+    // Found a solution
+    {
+        LOCK(cs_main);
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("CheckOnline() : generated block is stale");
+        
+        std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
+        if (!ProcessNewBlock(Params(), shared_pblock, true, NULL)){ 
+            return error("BitcoinMiner(poo): ProcessNewBlock, block not accepted");
+        }
+        
+    }
+
+    return true;
+}

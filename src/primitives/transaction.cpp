@@ -126,7 +126,8 @@ unsigned int CTransaction::GetTotalSize() const
 std::string CTransaction::ToString() const
 {
     std::string str;
-    str += strprintf("CTransaction(hash=%s, ver=%d, nTime=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
+    str += strprintf("CTransaction(%s hash=%s, ver=%d, nTime=%d, vin.size=%u, vout.size=%u, nLockTime=%u)\n",
+        IsCoinOnline()?"CoinOnline":IsCoinStake()?"CoinStake":IsCoinBase()?"CoinBase":"",
         GetHash().ToString().substr(0,10),
         nVersion,
         nTime,
@@ -142,10 +143,6 @@ std::string CTransaction::ToString() const
     return str;
 }
 
-int64_t GetTransactionWeight(const CTransaction& tx)
-{
-    return ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR -1) + ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-}
 std::string CMutableTransaction::ToString() const
 {
     std::string str;
@@ -165,4 +162,8 @@ std::string CMutableTransaction::ToString() const
     for (unsigned int i = 0; i < vout.size(); i++)
         str += "    " + vout[i].ToString() + "\n";
     return str;
+}
+int64_t GetTransactionWeight(const CTransaction& tx)
+{
+    return ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS) * (WITNESS_SCALE_FACTOR -1) + ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
 }

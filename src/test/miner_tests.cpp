@@ -19,6 +19,8 @@
 
 #include "test/test_bitcoin.h"
 
+#include "consensus/tx_verify.h"
+
 #include <memory>
 
 #include <boost/test/unit_test.hpp>

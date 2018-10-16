@@ -19,8 +19,7 @@
 #include "versionbits.h"
 
 #include "txdb.h"
-#include "util.h"
-
+#include "key.h"
 #include <algorithm>
 #include <exception>
 #include <map>
@@ -34,8 +33,6 @@
 
 #include <boost/unordered_map.hpp>
 #include <boost/filesystem/path.hpp>
-
-
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -211,6 +208,7 @@ static const signed int DEFAULT_CHECKBLOCKS = 6 * 4;
 static const unsigned int DEFAULT_CHECKLEVEL = 3;
 
 extern int64_t nLastCoinStakeSearchInterval;
+
 
 struct CTimestampIndexIteratorKey {
     unsigned int timestamp;
@@ -857,14 +855,8 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
 
 /** Apply the effects of this transaction on the UTXO set represented by view */
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight);
-
-/** Transaction validation functions */
  
-/**
- * Check if transaction is final and can be included in a block with the
- * specified height and time. Consensus critical.
- */
-bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime);
+
 
 /**
  * Check if transaction will be final in the next block to be created.
@@ -947,7 +939,6 @@ bool GetAddressUnspent(uint160 addressHash, int type, std::vector<std::pair<CAdd
 bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos, const CMessageHeader::MessageStartChars& messageStart);
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus::Params& consensusParams);
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus::Params& consensusParams);
-
 bool ReadFromDisk(CMutableTransaction& tx, CDiskTxPos& txindex, CBlockTreeDB& txdb, COutPoint prevout);
 bool ReadFromDisk(CMutableTransaction& tx, CDiskTxPos& txindex);
 bool ReadBlockFromDiskByTx(CBlock& block,CBlockTreeDB& txdb, uint256 txHash);
@@ -956,7 +947,7 @@ bool ReadBlockFromDiskByTx(CBlock& block,CBlockTreeDB& txdb, uint256 txHash);
 
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true);
-bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
+bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true , bool fCheckSig = true);
 
 /** Context-dependent validity checks.
  *  By "context", we mean only the previous block headers, but not the UTXO
