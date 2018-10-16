@@ -71,8 +71,13 @@ struct Params {
     /* pos */
     unsigned int nStakeMinAge;
     int COINBASE_MATURITY ;
-    bool IsV2(int64_t nTime) const {return nTime >= POO_START_TIME; }
-    bool IsPoSV(int64_t nTime) const {return nTime >= POS_START_TIME; }
+    
+    int64_t POO_START_TIME;
+    int64_t POS_START_TIME;
+    bool IsV2Time(int64_t nTime) const {return nTime >= POO_START_TIME; }
+    bool IsPosTime(int64_t nTime) const {return nTime >= POS_START_TIME; }
+
+    
     
 };
 } // namespace Consensus

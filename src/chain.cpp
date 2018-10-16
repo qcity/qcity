@@ -148,3 +148,10 @@ int64_t GetBlockProofEquivalentTime(const CBlockIndex& to, const CBlockIndex& fr
     }
     return sign * r.GetLow64();
 }
+const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake)
+{
+    while (pindex && pindex->pprev && (pindex->IsProofOfStake() != fProofOfStake)) {
+        pindex = pindex->pprev;
+    }
+    return pindex;
+}

@@ -658,10 +658,9 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 
 
 
-
 void ThreadStakeMiner(CWallet *pwallet, const CChainParams& chainparams)
 {
-    LogPrintf("staking start....");
+    LogPrintf("staking start....\n");
 
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
@@ -674,9 +673,9 @@ void ThreadStakeMiner(CWallet *pwallet, const CChainParams& chainparams)
     
     int nCount =0;
     while (true){
-        if(GetTime() < POS_START_TIME ) {
+        if( !chainparams.GetConsensus().IsPosTime( GetTime()) ) {
             DbgMsg("SLEPP POS NOT ACTIVE...");
-            MilliSleep(5000);
+            MilliSleep(6000);
             continue;
         }
         while (pwallet->IsLocked()){

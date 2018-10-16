@@ -13,6 +13,7 @@
 
 #include <vector>
 
+class CBitcoinAddress ;
 struct CDNSSeedData {
     std::string name, host;
     bool supportsServiceBitsFiltering;
@@ -77,6 +78,7 @@ public:
     const std::vector<SeedSpec6>& FixedSeeds() const { return vFixedSeeds; }
     const CCheckpointData& Checkpoints() const { return checkpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
+    const std::vector<CBitcoinAddress *>& OnlinePubKeys() const { return vOnlinePubKeys; }
 protected:
     CChainParams() {}
 
@@ -95,6 +97,7 @@ protected:
     bool fMineBlocksOnDemand;
     CCheckpointData checkpointData;
     ChainTxData chainTxData;
+    std::vector<CBitcoinAddress *> vOnlinePubKeys;
 };
 
 /**

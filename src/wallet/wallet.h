@@ -42,10 +42,14 @@ extern CFeeRate payTxFee;
 extern unsigned int nTxConfirmTarget;
 extern bool bSpendZeroConfChange;
 extern bool fSendFreeTransactions;
+
 extern bool fWalletRbf;
 
+
 extern bool fWalletUnlockStakingOnly;
+
 extern CAmount nMinimumInputValue;
+
 
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 100;
 //! -paytxfee default
@@ -249,7 +253,6 @@ public:
 
     const uint256& GetHash() const { return tx->GetHash(); }
     bool IsCoinBase() const { return tx->IsCoinBase(); }
-
     bool IsCoinOnline() const { return tx->IsCoinOnline(); }
     bool IsCoinStake() const { return tx->IsCoinStake(); }
     CAmount GetValueOut() const {return tx->GetValueOut();}
@@ -289,6 +292,7 @@ public:
     mutable bool fImmatureWatchCreditCached;
     mutable bool fAvailableWatchCreditCached;
     mutable bool fChangeCached;
+    
     mutable CAmount nDebitCached;
     mutable CAmount nCreditCached;
     mutable CAmount nImmatureCreditCached;
@@ -299,10 +303,8 @@ public:
     mutable CAmount nAvailableWatchCreditCached;
     mutable CAmount nChangeCached;
 
-
     mutable CAmount nImmatureStakeCreditCached;
     mutable bool fImmatureStakeCreditCached;
-
     CWalletTx()
     {
         Init(NULL);
@@ -342,7 +344,6 @@ public:
         nImmatureWatchCreditCached = 0;
         nChangeCached = 0;
         nOrderPos = -1;
-
         fImmatureStakeCreditCached = false;
         nImmatureStakeCreditCached = 0;
     }
@@ -415,13 +416,11 @@ public:
     CAmount GetDebit(const isminefilter& filter) const;
     CAmount GetCredit(const isminefilter& filter) const;
     CAmount GetImmatureCredit(bool fUseCache=true) const;
+    CAmount GetImmatureStakeCredit(bool fUseCache=true) const;
     CAmount GetAvailableCredit(bool fUseCache=true) const;
     CAmount GetImmatureWatchOnlyCredit(const bool& fUseCache=true) const;
     CAmount GetAvailableWatchOnlyCredit(const bool& fUseCache=true) const;
     CAmount GetChange() const;
-    //
-     CAmount GetImmatureStakeCredit(bool fUseCache=true) const;
-
 
     void GetAmounts(std::list<COutputEntry>& listReceived,
                     std::list<COutputEntry>& listSent, CAmount& nFee, std::string& strSentAccount, const isminefilter& filter) const;
@@ -820,7 +819,6 @@ public:
 
     CAmount GetStake() const;
     CAmount GetWatchOnlyStake() const;
-
     /**
      * Insert additional inputs into the transaction by
      * calling CreateTransaction();
@@ -911,7 +909,7 @@ public:
         {
             LOCK(cs_wallet);
             std::map<uint256, int>::iterator mi = mapRequestCount.find(hash);
-            if (mi != mapRequestCount.end())
+            if (mi != mapRequestCount.end()) 
                 (*mi).second++;
         }
     }
@@ -1028,7 +1026,6 @@ public:
     bool HaveAvailableCoinsForStaking() const;
     uint64_t GetStakeWeight() const;
     static const bool DEFAULT_STAKE_CACHE = true;
-
 };
 
 /** A key allocated from the key pool. */

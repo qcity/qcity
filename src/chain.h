@@ -430,7 +430,7 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
         READWRITE(nMoneySupply);
-        if(nTime >= POO_START_TIME &&(nVersion &VERSION_BLOCK_SIG)){ 
+        if(nTime >= POO_START_TIME &&(this->nVersion &VERSION_BLOCK_SIG)){ 
             READWRITE(vchBlockSig);
             READWRITE(nStakeModifier);
             READWRITE(prevoutStake);
@@ -522,5 +522,5 @@ public:
     /** Find the earliest block with timestamp equal or greater than the given. */
     CBlockIndex* FindEarliestAtLeast(int64_t nTime) const;
 };
-
+const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
 #endif // BITCOIN_CHAIN_H

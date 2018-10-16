@@ -116,6 +116,10 @@
 <context>
     <name>AskPassphraseDialog</name>
     <message>
+        <source>For staking only</source>
+        <translation>지분참여를 위해서만</translation>
+    </message>
+    <message>
         <source>Passphrase Dialog</source>
         <translation>암호문 대화상자</translation>
     </message>
@@ -1221,6 +1225,10 @@
     <message>
         <source>Immature:</source>
         <translation>아직 사용 불가능:</translation>
+    </message>
+    <message>
+        <source>Stake:</source>
+        <translation>참여지분:</translation>
     </message>
     <message>
         <source>Mined balance that has not yet matured</source>

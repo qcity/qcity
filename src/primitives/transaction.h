@@ -400,7 +400,6 @@ public:
     /**
      * yangchigi@yangchigi.com
      * coinonline is coinbase, but coinOline is like coinstake  vout[0]== empmy();
-     * 
      */
     bool IsCoinOnline() const
     {

@@ -138,6 +138,9 @@ public:
     CAmount getWatchImmatureBalance() const;
     EncryptionStatus getEncryptionStatus() const;
 
+    CAmount getStake() const;
+    CAmount getWatchStake() const;
+
     // Check address for validity
     bool validateAddress(const QString &address);
 
@@ -236,6 +239,9 @@ private:
     EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
 
+    CAmount cachedStake;
+    CAmount cachedWatchOnlyStake;
+
     QTimer *pollTimer;
 
     void subscribeToCoreSignals();
@@ -244,8 +250,8 @@ private:
 
 Q_SIGNALS:
     // Signal that balance in wallet changed
-    void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
-                        const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+    void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,const CAmount& stake,
+                        const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance , const CAmount& watchOnlyStake);
 
     // Encryption status of wallet changed
     void encryptionStatusChanged(int status);

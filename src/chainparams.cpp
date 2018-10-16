@@ -17,6 +17,7 @@
 #include "chainparamsseeds.h"
 #include "arith_uint256.h"
 
+#include "base58.h"
 
 bool fSearchGenesis = true;
 
@@ -111,7 +112,13 @@ public:
         consensus.nStakeTimestampMask = 0xf; // 10
         consensus.nProofOfOnlineInterval = 10;// 
         consensus.nStakeMinAge = 8 * 60 * 60; // 8 hours
+
         consensus.COINBASE_MATURITY = COINBASE_MATURITY;
+
+        consensus.POO_START_TIME = 2539583200; // 10/15/2018 @ 6:00:00   gmt +9( seoul 10/15/2018 15:00:00)
+        consensus.POS_START_TIME = 2539680400; // 10/15/2018 @ 9:00:00   gmt +9( seoul 10/15/2018 18:00:00)
+
+
         // The best chain should have at least this much work.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000006805c7318ce2736c0");
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -145,7 +152,12 @@ public:
         
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,28);//C
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,87);//c
+        vOnlinePubKeys = std::vector<CBitcoinAddress *>();
         
+        for(int i =0;i<ARRAYLEN( pnSeedOnline_test);i++){
+            CBitcoinAddress* addr = new CBitcoinAddress(pnSeedOnline_main[i]);
+            vOnlinePubKeys.push_back( addr);
+        }
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,204);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
@@ -206,15 +218,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 0; // January 1, 2017
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 0; // January 31st, 2018
-
-         // Deployment of PoO
-        consensus.vDeployments[Consensus::DEPLOYMENT_POO].bit = VERSION_BLOCK_SIG;
-        consensus.vDeployments[Consensus::DEPLOYMENT_POO].nStartTime = POO_START_TIME; // January 28, 2017
-        consensus.vDeployments[Consensus::DEPLOYMENT_POO].nTimeout = 0; // January 31st, 2018
+ 
         consensus.nStakeTimestampMask = 0xf; // 10
         consensus.nProofOfOnlineInterval = 10;// 
         consensus.nStakeMinAge = 8 * 60 * 60; // 8 hours
-        consensus.COINBASE_MATURITY = 100;
+        consensus.COINBASE_MATURITY = COINBASE_MATURITY / 10; // 500 / 10 = 50 for fast test
+
+        consensus.POO_START_TIME = 1539583200; // 10/15/2018 @ 6:00:00   gmt +9( seoul 10/15/2018 15:00:00)
+        consensus.POS_START_TIME = 1539680400; // 10/15/2018 @ 9:00:00   gmt +9( seoul 10/15/2018 18:00:00)
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
@@ -243,7 +254,12 @@ public:
         vSeeds.push_back(CDNSSeedData("dns001", "qct001.bitchk.com",true));
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,30);//C
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,89);//c
-
+        vOnlinePubKeys = std::vector<CBitcoinAddress *>();
+        
+        for(int i =0;i<ARRAYLEN( pnSeedOnline_test);i++){
+            CBitcoinAddress* addr = new CBitcoinAddress(pnSeedOnline_test[i]);
+            vOnlinePubKeys.push_back( addr);
+        }
         
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();

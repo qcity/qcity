@@ -91,6 +91,8 @@ private:
     QProgressBar *progressBar;
     QProgressDialog *progressDialog;
 
+    QLabel *labelStakingIcon;
+
     QMenuBar *appMenuBar;
     QAction *overviewAction;
     QAction *historyAction;
@@ -121,10 +123,13 @@ private:
     HelpMessageDialog *helpMessageDialog;
     ModalOverlay *modalOverlay;
 
+    QAction *unlockWalletAction;
+    QAction *lockWalletAction;
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
     int spinnerFrame;
 
+    uint64_t nWeight;
     const PlatformStyle *platformStyle;
 
     /** Create the main UI actions. */
@@ -243,6 +248,11 @@ private Q_SLOTS:
     void toggleNetworkActive();
 
     void showModalOverlay();
+
+
+	void updateWeight();
+
+    void updateStakingIcon();
 };
 
 class UnitDisplayStatusBarControl : public QLabel

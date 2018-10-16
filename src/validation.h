@@ -210,6 +210,7 @@ static const unsigned int MIN_BLOCKS_TO_KEEP = 288;
 static const signed int DEFAULT_CHECKBLOCKS = 6 * 4;
 static const unsigned int DEFAULT_CHECKLEVEL = 3;
 
+extern int64_t nLastCoinStakeSearchInterval;
 
 struct CTimestampIndexIteratorKey {
     unsigned int timestamp;
