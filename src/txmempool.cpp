@@ -7,7 +7,6 @@
 
 #include "clientversion.h"
 #include "consensus/consensus.h"
-#include "chainparams.h"
 #include "consensus/validation.h"
 #include "validation.h"
 #include "policy/policy.h"
@@ -19,8 +18,7 @@
 #include "utiltime.h"
 #include "version.h"
 
-#include "consensus/tx_verify.h"
-
+#include <consensus/tx_verify.h>
 using namespace std;
 
 CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& _tx, const CAmount& _nFee,
@@ -701,7 +699,8 @@ void CTxMemPool::removeForReorg(const CCoinsViewCache *pcoins, unsigned int nMem
                     continue;
                 const CCoins *coins = pcoins->AccessCoins(txin.prevout.hash);
                 if (nCheckFrequency != 0) assert(coins);
-                if (!coins || (coins->IsCoinBase() && ((signed long)nMemPoolHeight) - coins->nHeight < Params().GetConsensus().COINBASE_MATURITY )) {
+                if (!coins || 
+                    ( (coins->IsCoinBase()||coins->IsCoinStake()) && ((signed long)nMemPoolHeight) - coins->nHeight < COINBASE_MATURITY)) {
                     txToRemove.insert(it);
                     break;
                 }
@@ -881,7 +880,7 @@ void CTxMemPool::check(const CCoinsViewCache *pcoins) const
             waitingOnDependants.push_back(&(*it));
         else {
             CValidationState state;
-            bool fCheckResult = tx.IsCoinBase() ||
+            bool fCheckResult = tx.IsCoinBase() || tx.IsCoinStake() ||
                 Consensus::CheckTxInputs(tx, state, mempoolDuplicate, nSpendHeight);
             assert(fCheckResult);
             UpdateCoins(tx, mempoolDuplicate, 1000000);
@@ -897,7 +896,7 @@ void CTxMemPool::check(const CCoinsViewCache *pcoins) const
             stepsSinceLastRemove++;
             assert(stepsSinceLastRemove < waitingOnDependants.size());
         } else {
-            bool fCheckResult = entry->GetTx().IsCoinBase() ||
+            bool fCheckResult = entry->GetTx().IsCoinBase() || entry->GetTx().IsCoinStake() ||
                 Consensus::CheckTxInputs(entry->GetTx(), state, mempoolDuplicate, nSpendHeight);
             assert(fCheckResult);
             UpdateCoins(entry->GetTx(), mempoolDuplicate, 1000000);
