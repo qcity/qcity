@@ -221,7 +221,7 @@ public:
  
         consensus.nStakeTimestampMask = 0xf; // 10
         consensus.nProofOfOnlineInterval = 10;// 
-        consensus.nStakeMinAge = 8 * 60 * 60; // 8 hours
+        consensus.nStakeMinAge = 1 * 60 * 60; // 1 hours
         consensus.COINBASE_MATURITY = COINBASE_MATURITY / 10; // 500 / 10 = 50 for fast test
 
         consensus.POO_START_TIME = 2539583200; // 10/15/2018 @ 6:00:00   gmt +9( seoul 10/15/2018 15:00:00)
