@@ -4256,7 +4256,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
     {
         // 목표 비트로 n( 1에서 60?으로 수정) 번 코인을 찾는다.
         // int64_t nSearchInterval = nBestHeight+1 > 0 ? 1 : nSearchTime - nLastCoinStakeSearchTime;
-        if (wallet.CreateCoinStake(wallet, block.nBits, 1, nFees, txCoinStake, key))
+        if (wallet.CreateCoinStake(wallet, block.nBits, 60, nFees, txCoinStake, key))
         {
             // if have other tx allow time limit zero else allow time is pow block limit 
             if (( block.vtx.size()>1&&txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1)||txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit() + 60)
