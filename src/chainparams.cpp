@@ -115,8 +115,8 @@ public:
 
         consensus.COINBASE_MATURITY = COINBASE_MATURITY;
 
-        consensus.POO_START_TIME = 2539583200; // 10/15/2018 @ 6:00:00   gmt +9( seoul 10/15/2018 15:00:00)
-        consensus.POS_START_TIME = 2539680400; // 10/15/2018 @ 9:00:00   gmt +9( seoul 10/15/2018 18:00:00)
+        consensus.POO_START_TIME = 1541030400; // 11/01/2018 @ 0:00:00   ( seoul 11/01/2018 9:00:00)
+        consensus.POS_START_TIME = 1541030400; // 11/01/2018 @ 0:00:00   ( seoul 11/01/2018 9:00:00)
 
 
         // The best chain should have at least this much work.
