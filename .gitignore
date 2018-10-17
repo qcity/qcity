@@ -14,6 +14,7 @@ src/test/test_qcity
 src/test/test_qcity_fuzzy
 src/qt/test/test_qcity-qt
 data/*
+data-*
 src/qcity
 src/qcityd
 src/qcity-cli
@@ -21,7 +22,7 @@ src/qcity-tx
 src/test/test_qcity
 src/test/test_qcity_fuzzy
 src/qt/test/test_qcity-qt
-
+xxx
 # autoreconf
 Makefile.in
 aclocal.m4
