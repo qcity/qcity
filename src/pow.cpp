@@ -72,13 +72,12 @@ unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nF
     
     // Limit adjustment step , 진짜로 이용된 시간.
     int64_t nActualTimespan = pindexLast->GetBlockTime() - nFirstBlockTime;//1 day time span 
-    // 86400 / 4 = 6 hour , min 4hour
-    // 이용된 시간이 /4 작으면 /4 로 최소값과 최대값을 1/4 *4 로 제한한다.
+    
     if (nActualTimespan < params.nPowTargetTimespan/4) //nPowTargetTimespan = 1day 86400
         nActualTimespan = params.nPowTargetTimespan/4;
-    // max 4day
     if (nActualTimespan > params.nPowTargetTimespan*4)
         nActualTimespan = params.nPowTargetTimespan*4;
+
     // Retarget
     arith_uint256 bnNew;
     arith_uint256 bnOld;
