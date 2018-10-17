@@ -749,7 +749,6 @@ void ThreadOnlineMiner(CWallet *pwallet, const CChainParams& chainparams)
             }
             MilliSleep(GetRandInt(nMinerSleep));
             bool result = CheckOnline(pblock, *pwallet, chainparams);
-            DbgMsg("check Online result :%s " , result?"true":"false");
             SetThreadPriority(THREAD_PRIORITY_LOWEST);
             if(result ) {
                 MilliSleep(nMinerSleep * 60 );
@@ -808,7 +807,7 @@ void ThreadStakeMiner(CWallet *pwallet, const CChainParams& chainparams)
             }
         }
         CBlockIndex* pindexPrev = chainActive.Tip();
-        if(chainparams.GetConsensus().IsPosTime( GetTime()) && ((pindexPrev->nHeight +1)  % chainparams.GetConsensus().nProofOfOnlineInterval) == 0){
+        if(chainparams.GetConsensus().IsV2Time( GetTime()) && ((pindexPrev->nHeight +1)  % chainparams.GetConsensus().nProofOfOnlineInterval) == 0){
             DbgMsg("skip online block. %d %d " , pindexPrev->nHeight ,chainparams.GetConsensus().nProofOfOnlineInterval);
             MilliSleep(1000 * 15);
             continue;
