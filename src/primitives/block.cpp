@@ -22,6 +22,20 @@ uint256 CBlockHeader::GetPoWHash() const
     scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
     return thash;
 }
+std::string CBlockHeader::ToString() const
+{
+    std::stringstream s;
+    s << strprintf("CBlockHeader(hash=%s, ver=0x%08x, hashPrevBlock=%s, hashMerkleRoot=%s, nTime=%u, nBits=%08x, nNonce=%u,blockType=%s )\n",
+        GetHash().ToString(),
+        nVersion,
+        hashPrevBlock.ToString(),
+        hashMerkleRoot.ToString(),
+        nTime, nBits, nNonce,
+        IsProofOfOnline()?"PoO":IsProofOfStake()?"PoS":"PoW");
+    
+    return s.str();
+}
+
 
 std::string CBlock::ToString() const
 {

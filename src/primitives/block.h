@@ -55,7 +55,7 @@ public:
             prevoutStake.SetNull();    
         }
     }
-
+    std::string ToString() const;
     void SetNull()
     {
         nVersion = 0;
