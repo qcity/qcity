@@ -435,12 +435,21 @@
        <string>Date</string>
       </property>
      </column>
+     
      <column>
       <property name="text">
        <string>Confirmations</string>
       </property>
       <property name="toolTip">
        <string>Confirmed</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>CoinAge</string>
+      </property>
+      <property name="toolTip">
+       <string>CoinAge</string>
       </property>
      </column>
      <column>

@@ -18,7 +18,7 @@
 #include "policy/policy.h"
 #include "validation.h" // For mempool
 #include "wallet/wallet.h"
-
+#include "pos.h"
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 
 #include <QApplication>
@@ -134,6 +134,7 @@ CoinControlDialog::CoinControlDialog(const PlatformStyle *_platformStyle, QWidge
     ui->treeWidget->setColumnWidth(COLUMN_ADDRESS, 320);
     ui->treeWidget->setColumnWidth(COLUMN_DATE, 130);
     ui->treeWidget->setColumnWidth(COLUMN_CONFIRMATIONS, 110);
+    ui->treeWidget->setColumnWidth(COLUMN_COINAGE, 110);
     ui->treeWidget->setColumnHidden(COLUMN_TXHASH, true);         // store transaction hash in this column, but don't show it
     ui->treeWidget->setColumnHidden(COLUMN_VOUT_INDEX, true);     // store vout index in this column, but don't show it
 
@@ -674,7 +675,8 @@ void CoinControlDialog::updateView()
         }
 
         CAmount nSum = 0;
-        int nChildren = 0;
+        int nChildren = 0; 
+        int64_t current = GetTime();
         BOOST_FOREACH(const COutput& out, coins.second) {
             nSum += out.tx->tx->vout[out.i].nValue;
             nChildren++;
@@ -723,6 +725,12 @@ void CoinControlDialog::updateView()
             // confirmations
             itemOutput->setText(COLUMN_CONFIRMATIONS, QString::number(out.nDepth));
             itemOutput->setData(COLUMN_CONFIRMATIONS, Qt::UserRole, QVariant((qlonglong)out.nDepth));
+
+            // coinage
+            int64_t timespan = current -out.tx->GetTxTime();
+            int64_t coinAge  = GetCoinAgeByTime(timespan, out.tx->tx->vout[out.i].nValue);
+            itemOutput->setText(COLUMN_COINAGE, QString::number(coinAge));
+            itemOutput->setData(COLUMN_COINAGE, Qt::UserRole, QVariant((qlonglong)coinAge));
 
             // transaction hash
             uint256 txhash = out.tx->GetHash();
