@@ -2284,7 +2284,9 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         CValidationState state;
         if (!ProcessNewBlockHeaders(headers, state, chainparams, &pindexLast)) {
             int nDoS;
+            
             if (state.IsInvalid(nDoS)) {
+                DbgMsg("processNewBlockHeader fail %s" , state.GetRejectReason());
                 if (nDoS > 0) {
                     LOCK(cs_main);
                     Misbehaving(pfrom->GetId(), nDoS);
