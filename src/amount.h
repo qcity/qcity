@@ -32,7 +32,7 @@ static const CAmount MAX_MONEY = 500000000 * COIN;//500,000,000
 
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
-static const CAmount STAKE_RATE = 0.01 * COIN; // year 0.01 %
+
 
 /**
  * Fee rate in satoshis per kilobyte: CAmount / kB

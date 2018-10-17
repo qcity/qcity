@@ -338,13 +338,28 @@ bool TransactionGetCoinAge(CTransaction& transaction, uint64_t& nCoinAge)
 CAmount GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees)
 {
     CAmount nSubsidy;
-    
-    //TODO 
-    nSubsidy = nCoinAge * 1 * STAKE_RATE / 365;
+    int STAKE_RATE = 0.1; // year 10%
+    //TODO
+    int64_t timeSpanFromStart = pindexPrev->nTime - Params().GetConsensus().POS_START_TIME;
+    int64_t yearSec = 60 * 60 * 24 * 365;
+    if (timeSpanFromStart < yearSec) {               // first 1 year , every year minus 1% to minimun 5% )
+        nSubsidy = nCoinAge * 1 * STAKE_RATE * COIN / 365; // 10%
+    } else if (timeSpanFromStart < yearSec * 2) {
+        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 0.01) * COIN / 365; // 9%
+    } else if (timeSpanFromStart < yearSec * 3) {
+        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 0.02) * COIN / 365; // 8%
+    } else if (timeSpanFromStart < yearSec * 4) {
+        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 0.03) * COIN / 365; // 7%
+    } else if (timeSpanFromStart < yearSec * 5) {
+        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 0.04) * COIN / 365; // 6%
+    } else {
+        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 0.05) * COIN / 365; // 5%
+    }
+
     if (pindexPrev != NULL && (pindexPrev->nMoneySupply + nSubsidy) >= MAX_MONEY) {
-		LogPrintf("Max Money.... no more reward[pow]\n");
-		nSubsidy = 0;
-	}
+        LogPrintf("Max Money.... no more reward[pos\n");
+        nSubsidy = 0;
+    }
     LogPrint("creation", "GetProofOfStakeReward(): create=%s nCoinAge=%d\n", FormatMoney(nSubsidy), nCoinAge);
 
     return nSubsidy + nFees;
