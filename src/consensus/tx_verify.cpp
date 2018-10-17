@@ -15,6 +15,7 @@
 #include "coins.h"
 #include "utilmoneystr.h"
 #include "util.h" 
+#include "consensus/consensus.h"
 
 bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
 {
@@ -233,7 +234,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
 
         // If prev is coinbase, check that it's matured
         if (coins->IsCoinBase() || coins->IsCoinStake()) {
-            if (nSpendHeight - coins->nHeight < COINBASE_MATURITY)
+            if (nSpendHeight - coins->nHeight < Params().COINBASE_MATURITY)
                 return state.Invalid(false,
                     REJECT_INVALID, "bad-txns-premature-spend-of-coinbase",
                     strprintf("tried to spend coinbase at depth %d", nSpendHeight - coins->nHeight));
