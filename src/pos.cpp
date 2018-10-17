@@ -253,7 +253,7 @@ bool GetCoinAge(const CTransaction& tx,  uint64_t& nCoinAge)
         const CDiskBlockPos& pos = CDiskBlockPos(txindex.nFile, txindex.nPos);
         if (!ReadBlockFromDisk(block, pos, Params().GetConsensus()))
             return false; // unable to read block of previous transaction
-        if (block.GetBlockTime() + Params().GetConsensus().nStakeMinAge > tx.nTime){ 
+        if (block.GetBlockTime() + Params().GetConsensus().nStakeMinAge > tx.nTime){  // 최소 시간... 15 sec
             DbgMsg(" block: %d + %d > tx:%d  , gap %d" ,
                 block.GetBlockTime() ,
                 Params().GetConsensus().nStakeMinAge , 

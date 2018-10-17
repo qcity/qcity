@@ -4128,10 +4128,9 @@ bool CWallet::CreateCoinOnline(const CKeyStore& keystore, unsigned int nBits, in
                 coinbaseScript->reserveScript = GetScriptForRawPubKey(key.GetPubKey());
 
                 txNew.nTime -= n;
-                // txNew.vin[0].prevout.SetNull();
                 nCredit = nFees;
                 txNew.vout.push_back(CTxOut(0, coinbaseScript->reserveScript   ));
-                // LogPrint("coinstake", "CreateCoinOnline : added kernel type=%d\n", whichType);
+                
                 fKernelFound = true;
                 break;
             } 
@@ -4196,7 +4195,8 @@ bool CWallet::SignPoOBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
     // if have other tx allow time limit zero else allow time is pow block limit 
     // 거래가 있으면 이전 블럭 +1 이면 허용하고, 거래가 없으면 60이후에 받아 들인다?
     // but 체크하는 부분이 존재하지 않는다. 블럭을 받아 들일때 확인되어야 한다. TODO
-    if (( block.vtx.size()>1 && txCoinOnline.nTime >= pindexBestHeader->GetPastTimeLimit()+1)||txCoinOnline.nTime >= pindexBestHeader->GetPastTimeLimit() + 60)
+    if (( block.vtx.size()>1 && txCoinOnline.nTime >= pindexBestHeader->GetPastTimeLimit()+1)
+        ||txCoinOnline.nTime >= pindexBestHeader->GetPastTimeLimit() + Params().GetConsensus().nStakeTimestampMask )
     {
         // make sure coinstake would meet timestamp protocol
         //    as it would be the same as the block timestamp
@@ -4216,7 +4216,7 @@ bool CWallet::SignPoOBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
         return key.Sign(block.GetHashWithoutSign(), block.vchBlockSig);
         
     }else{
-        DbgMsg("time stamp ... ? %d " ,pindexBestHeader->GetPastTimeLimit());
+        DbgMsg("skip poo tx timespan:%d " , txCoinOnline.nTime - pindexBestHeader->GetPastTimeLimit());
     }
     return false;
 }
@@ -4259,7 +4259,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
         if (wallet.CreateCoinStake(wallet, block.nBits, 60, nFees, txCoinStake, key))
         {
             // if have other tx allow time limit zero else allow time is pow block limit 
-            if (( block.vtx.size()>1&&txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1)||txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit() + 60)
+            if (( block.vtx.size()>1&&txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1)||txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit() + Params().GetConsensus().nStakeTimestampMask)// 
             {
                 DbgMsg("tx:%d, limit:%d gap:%d",txCoinStake.nTime , pindexBestHeader->GetPastTimeLimit(), ( txCoinStake.nTime - pindexBestHeader->GetPastTimeLimit()));
                 // make sure coinstake would meet timestamp protocol
