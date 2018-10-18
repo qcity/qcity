@@ -54,14 +54,14 @@ CAmount nMinimumInputValue = 0;
 
 /**
  * min split tx 
- * 50만 이상의 tx 는 stake시 추가로 넣지 않는다.
+ * 5만 까지만 하나의 tx로 합친다.
  * 
  */
-static int64_t GetStakeCombineThreshold() { return 500000 * COIN; }
+static int64_t GetStakeCombineThreshold() { return 50000 * COIN; }
 /**
- *  100만 이하의 입력은 나누지 않는다.
+ *  10만 이하의 입력은 나누지 않는다.
  */
-static int64_t GetStakeSplitThreshold() { return 2 * GetStakeCombineThreshold(); }
+static int64_t GetStakeSplitThreshold() { return 20 * GetStakeCombineThreshold(); }
 
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)

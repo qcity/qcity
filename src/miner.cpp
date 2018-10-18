@@ -808,7 +808,7 @@ void ThreadStakeMiner(CWallet *pwallet, const CChainParams& chainparams)
         }
         CBlockIndex* pindexPrev = chainActive.Tip();
         if(chainparams.GetConsensus().IsV2Time( GetTime()) && ((pindexPrev->nHeight +1)  % chainparams.GetConsensus().nProofOfOnlineInterval) == 0){
-            if( (GetTime() - pindexPrev->nTime ) <= chainparams.GetConsensus().nPowTargetSpacing * 5 ) { // over 5 times of powspace do find..
+            if( (GetTime() - pindexPrev->nTime ) <= chainparams.GetConsensus().nPowTargetSpacing * 3 ) { // over 3 times of powspace do find..
                 DbgMsg("skip online block. %d %d " , pindexPrev->nHeight ,chainparams.GetConsensus().nProofOfOnlineInterval);
                 MilliSleep(1000 * 15);
                 continue;

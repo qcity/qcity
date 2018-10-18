@@ -3274,7 +3274,7 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
         // v2 
         if( chainparams.GetConsensus().IsV2Time( block.nTime )&&pindexPrev->nHeight > BLOCK_HEIGHT_INIT  ){
             if( ((pindexPrev->nHeight +1 ) % chainparams.GetConsensus().nProofOfOnlineInterval )==0) { // is must online block.
-                if(!block.IsProofOfOnline() && ( block.GetBlockTime() - pindexPrev->GetBlockTime() ) < chainparams.GetConsensus().nPowTargetSpacing * 5 ) { // %n block must online or block time space over 3 times of default space...
+                if(!block.IsProofOfOnline() && ( block.GetBlockTime() - pindexPrev->GetBlockTime() ) < chainparams.GetConsensus().nPowTargetSpacing * 3 ) { // %n block must online or block time space over 3 times of default space...
                     return state.Invalid(false, REJECT_INVALID, "ConnectBlock(): must online block");
                 }
             }else {
