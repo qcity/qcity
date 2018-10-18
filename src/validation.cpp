@@ -1798,11 +1798,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     std::vector<int> prevheights;
     CAmount nFees = 0;
-    CAmount nStakeReward = 0;
+    
     int nInputs = 0;
     CAmount nSigOpsCost = 0;
     
     CAmount nValueOut = 0;
+    CAmount nStakeReward = 0;
     CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
     std::vector<std::pair<uint256, CDiskTxPos> > vPos;
     vPos.reserve(block.vtx.size());
@@ -1961,29 +1962,40 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         uint64_t nCoinAge;
         if (!TransactionGetCoinAge(const_cast<CTransaction&>(*block.vtx[1]), nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", block.vtx[1]->GetHash().ToString());
-
-        CAmount blockReward = GetProofOfStakeReward( pindex->pprev,nCoinAge, nFees);
-
+        blockReward = GetProofOfStakeReward( pindex->pprev,nCoinAge, nFees);
+        DbgMsg("block reward %d stakereward :%d , fees:%d ,vout:%d" , blockReward , nStakeReward , nFees ,block.vtx[1]->GetValueOut());
+        
         if (nStakeReward > blockReward)
             return state.DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, blockReward));
+        pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + ( nStakeReward<0?0:blockReward -nFees)  ;   
     } else {
         blockReward = nFees + GetBlockSubsidy(pindex->pprev, chainparams.GetConsensus());
-    }
-
-
-    if (block.vtx[0]->GetValueOut() > blockReward)
-        return state.DoS(100,
+        
+        if (block.vtx[0]->GetValueOut() > blockReward)
+            return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (%s) (actual=%d vs limit=%d)",
                                block.IsProofOfStake()?"pos":block.IsProofOfOnline()?"poo":"pow",
                                block.vtx[0]->GetValueOut(), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
 
+        
+        DbgMsg("block reward :%d ,fee:%d generated :%d ", blockReward ,nFees ,blockReward -nFees);
+        pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + ( blockReward<0?0:blockReward -nFees)  ;
+    }
+
+
+    
+
     if (!control.Wait())
         return state.DoS(100, false);
     int64_t nTime4 = GetTimeMicros(); nTimeVerify += nTime4 - nTime2;
-    LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
-    //monet supply
-    pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + ( blockReward<0?0:blockReward -nFees)  ;
+    LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", 
+            nInputs - 1, 
+            0.001 * (nTime4 - nTime2), 
+            nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), 
+            nTimeVerify * 0.000001);
+    //money supply
+    
     if (fJustCheck)
         return true;
 
