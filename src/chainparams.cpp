@@ -121,10 +121,10 @@ public:
 
         // The best chain should have at least this much work.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000006805c7318ce2736c0");
-        consensus.nMinimumChainWork = uint256S("0x00");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000042daec57b49294");
         // By default assume that the signatures in ancestors of this block are valid.
         //consensus.defaultAssumeValid = uint256S("0x1673fa904a93848eca83d5ca82c7af974511a7e640e22edc2976420744f2e56a"); //1155631
-        consensus.defaultAssumeValid = uint256S("0x00");
+        consensus.defaultAssumeValid = uint256S("0x338dabdb0743eaf486664a9cbe2df3a36ea4c3d31b3cbf9c75d3f05ea33cf4ac");// 547850
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -172,6 +172,11 @@ public:
         checkpointData = (CCheckpointData) {
             boost::assign::map_list_of
             (  0, uint256S("0x8b3aa1f1d87b9533d9d36b63875c0c97d833cd5cd8585c05030783a515a3345b"))
+            (  100000, uint256S("0x2d4a93e029c50e73ac20bb67a0669dc8e9247edb5eba01ead782ac25c1ca48f4"))
+            (  200000, uint256S("0xf9bd1441095d0670f75948d9a91efc861844e07d4c643565a5a6c7003d1a81c2"))
+            (  300000, uint256S("0x13f7a9b32259e07a963bcbfb073fb533781d0a9466c3821314eb22721b2e7a15"))
+            (  400000, uint256S("0x49dfeb021332055258293761bf5ff306e602cd1fd03cb40c5fb00fafe24dd48a"))
+            (  545000, uint256S("0x16e2f0bf0bc03428efa29c79fb90401317549853c3844ec4a0f1da142a17cd39"))
         };
 
         chainTxData = ChainTxData{
