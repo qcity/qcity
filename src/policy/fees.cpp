@@ -164,12 +164,12 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
             }
         }
     }
-    if(fDebug) { 
-        LogPrint("estimatefee", "%3d: For conf success %s %4.2f need feerate %s: %12.5g from buckets %8g - %8g  Cur Bucket stats %6.2f%%  %8.1f/(%.1f+%d mempool)\n",
-             confTarget, requireGreater ? ">" : "<", successBreakPoint,
-             requireGreater ? ">" : "<", median, buckets[minBucket], buckets[maxBucket],
-             100 * nConf / (totalNum + extraNum), nConf, totalNum, extraNum);
-    }
+    // if(fDebug) { 
+    //     LogPrint("estimatefee", "%3d: For conf success %s %4.2f need feerate %s: %12.5g from buckets %8g - %8g  Cur Bucket stats %6.2f%%  %8.1f/(%.1f+%d mempool)\n",
+    //          confTarget, requireGreater ? ">" : "<", successBreakPoint,
+    //          requireGreater ? ">" : "<", median, buckets[minBucket], buckets[maxBucket],
+    //          100 * nConf / (totalNum + extraNum), nConf, totalNum, extraNum);
+    // }
     return median;
 }
 

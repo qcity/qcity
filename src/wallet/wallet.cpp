@@ -4245,12 +4245,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
 
     CKey key;
     CMutableTransaction txCoinBase(*block.vtx[0]);
-    // CMutableTransaction txCoinStake;
-    // txCoinStake.nTime = GetAdjustedTime();
-    // txCoinStake.nVersion = TX_VERSION_STAKE;
-    // int64_t time = txCoinStake.nTime;
-    // txCoinStake.nTime &= ~Params().GetConsensus().nStakeTimestampMask;
-    // int64_t nSearchTime = txCoinStake.nTime; // search to current time
+    
     CMutableTransaction txCoinStake(*block.vtx[1]);   
     txCoinStake.nTime = GetAdjustedTime();
     txCoinStake.nVersion = TX_VERSION_STAKE;
@@ -4264,7 +4259,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
         if (wallet.CreateCoinStake(wallet, block.nBits, 60, nFees, txCoinStake, key))
         {
             // if have other tx allow time limit zero else allow time is pow block limit 
-            if (( block.vtx.size()>1&&txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1)||txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit() + Params().GetConsensus().nStakeTimestampMask)// 
+            if (( block.vtx.size()>1&&txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1) )// 
             {
                 DbgMsg("tx:%d, limit:%d gap:%d",txCoinStake.nTime , pindexBestHeader->GetPastTimeLimit(), ( txCoinStake.nTime - pindexBestHeader->GetPastTimeLimit()));
                 // make sure coinstake would meet timestamp protocol
@@ -4462,7 +4457,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CAmount nTargetValue = nBalance - nReserveBalance;
     //DbgMsg("스태이킹할 코인 선택 targetValue %d = %d - %d" , nTargetValue , nBalance , nReserveBalance);
     if (!SelectCoinsForStaking(nTargetValue, setCoins, nValueIn)) { 
-    	return false;
+        return false;
     }
 
     if (setCoins.empty())
