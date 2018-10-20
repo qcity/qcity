@@ -4235,7 +4235,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
 
     // if we are trying to sign
     //    a complete proof-of-stake block
-    if (block.IsProofOfStake()){
+    if (block.IsProofOfStake() && !block.vchBlockSig.empty()){
     	LogPrintf("trying to sign a complete proof-of-stake block\n");
     	return true;
     }
@@ -4245,13 +4245,18 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
 
     CKey key;
     CMutableTransaction txCoinBase(*block.vtx[0]);
-    CMutableTransaction txCoinStake;
+    // CMutableTransaction txCoinStake;
+    // txCoinStake.nTime = GetAdjustedTime();
+    // txCoinStake.nVersion = TX_VERSION_STAKE;
+    // int64_t time = txCoinStake.nTime;
+    // txCoinStake.nTime &= ~Params().GetConsensus().nStakeTimestampMask;
+    // int64_t nSearchTime = txCoinStake.nTime; // search to current time
+    CMutableTransaction txCoinStake(*block.vtx[1]);   
     txCoinStake.nTime = GetAdjustedTime();
     txCoinStake.nVersion = TX_VERSION_STAKE;
     int64_t time = txCoinStake.nTime;
     txCoinStake.nTime &= ~Params().GetConsensus().nStakeTimestampMask;
     int64_t nSearchTime = txCoinStake.nTime; // search to current time
-
     if (nSearchTime > nLastCoinStakeSearchTime)
     {
         // 목표 비트로 n( 1에서 60?으로 수정) 번 코인을 찾는다.
@@ -4280,9 +4285,13 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
                 // append a signature to our block
                 return key.Sign(block.GetHashWithoutSign(), block.vchBlockSig);
             }
+        }else{
+            LogPrint("pos", "CreateCoinStake fail\n");    
         }
         nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
-        nLastCoinStakeSearchTime = nSearchTime;
+        
+    }else{
+        LogPrint("pos", "skip stake time %d > %d \n" ,nSearchTime , nLastCoinStakeSearchTime);
     }
 
     return false;
@@ -4569,8 +4578,9 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     // Calculate coin age reward
     {
         uint64_t nCoinAge;
-        if (!GetCoinAge(txNew,   nCoinAge))
-            return error("CreateCoinStake : failed to calculate coin age");       
+        CTransaction ptxNew = CTransaction(txNew);
+        if (!TransactionGetCoinAge(ptxNew, nCoinAge))
+            return error("CreateCoinStake : failed to calculate coin age");
         int64_t nReward = GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
         if (nReward <= 0){
             return false;

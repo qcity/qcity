@@ -148,6 +148,9 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     
     // Add dummy coinbase tx as first transaction
     pblock->vtx.emplace_back();
+    // Add dummy coinstake tx as second transaction
+    if(blockType==BlockTYPE::BLOCK_TYPE_POS)
+        pblock->vtx.emplace_back();
     pblocktemplate->vTxFees.push_back(-1); // updated at end
     pblocktemplate->vTxSigOpsCost.push_back(-1); // updated at end
 
@@ -213,6 +216,22 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     }
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
+
+    // Create coinstake transaction.
+    if(blockType==BlockTYPE::BLOCK_TYPE_POS)
+    {
+        CMutableTransaction coinstakeTx;
+        coinstakeTx.vout.resize(2);
+        coinstakeTx.vout[0].SetEmpty();
+        coinstakeTx.vout[1].scriptPubKey = scriptPubKeyIn;
+        //originalRewardTx = coinstakeTx;
+        pblock->vtx[1] = MakeTransactionRef(std::move(coinstakeTx));
+
+        //this just makes CBlock::IsProofOfStake to return true
+        //real prevoutstake info is filled in later in SignBlock
+        pblock->prevoutStake.n=0;
+
+    }
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
     
@@ -223,12 +242,14 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
     if(blockType!=BlockTYPE::BLOCK_TYPE_POS)
         UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
-    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus() );
+    pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus() ,blockType==BlockTYPE::BLOCK_TYPE_POS?true:false);
     pblock->nNonce         = 0;
     pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(*pblock->vtx[0]);
 
     CValidationState state;
-    if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
+    // do not test pos block, pos block can not identify on createBlock function
+    if (blockType!=BlockTYPE::BLOCK_TYPE_POS&& !TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
+        DbgMsg(" bad block %s" , pblock->ToString());
         throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
     }
     int64_t nTime2 = GetTimeMicros();
