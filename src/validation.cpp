@@ -1962,10 +1962,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         if (!TransactionGetCoinAge(const_cast<CTransaction&>(*block.vtx[1]), nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", block.vtx[1]->GetHash().ToString());
         blockReward = GetProofOfStakeReward( pindex->pprev,nCoinAge, nFees);
-        //DbgMsg("block reward %d stakereward :%d , fees:%d ,vout:%d" , blockReward , nStakeReward , nFees ,block.vtx[1]->GetValueOut());
+        LogPrint("pos" , "block reward %d stakereward :%d , fees:%d ,vout:%d" , blockReward , nStakeReward , nFees ,block.vtx[1]->GetValueOut());
         
-        if (nStakeReward > blockReward)
-            return state.DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, blockReward));
+        if (nStakeReward > blockReward) { 
+            return state.DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, blockReward),
+                    REJECT_INVALID, "bad-cb-amount");
+        }
         pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + ( nStakeReward<0?0:blockReward -nFees)  ;   
     } else {
         blockReward = nFees + GetBlockSubsidy(pindex->pprev, chainparams.GetConsensus());
@@ -1977,7 +1979,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                block.vtx[0]->GetValueOut(), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
 
-        
         //DbgMsg("block reward :%d ,fee:%d generated :%d ", blockReward ,nFees ,blockReward -nFees);
         pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0) + ( blockReward<0?0:blockReward -nFees)  ;
     }

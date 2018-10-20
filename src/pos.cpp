@@ -274,24 +274,31 @@ bool TransactionGetCoinAge(CTransaction& transaction, uint64_t& nCoinAge)
 CAmount GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees)
 {
     CAmount nSubsidy;
-    int STAKE_RATE = 10; // year 10%
+    int64_t STAKE_RATE = 10; // year 10%
     //TODO
     int64_t timeSpanFromStart = pindexPrev->nTime - Params().GetConsensus().POS_START_TIME;
     int64_t yearSec = 60 * 60 * 24 * 365;
     if (timeSpanFromStart < yearSec) {               // first 1 year , every year minus 1% to minimun 5% )
-        nSubsidy = nCoinAge * 1 * STAKE_RATE / 100 * COIN / 365; // 10%
+        nSubsidy = nCoinAge * COIN  * STAKE_RATE / 100 / 365; // 10%
     } else if (timeSpanFromStart < yearSec * 2) {
-        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 1) / 100 * COIN / 365; // 9%
+        nSubsidy = nCoinAge * COIN * (STAKE_RATE - 1) / 100  / 365; // 9%
     } else if (timeSpanFromStart < yearSec * 3) {
-        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 2) / 100 * COIN / 365; // 8%
+        nSubsidy = nCoinAge * COIN * (STAKE_RATE - 2) / 100  / 365; // 8%
     } else if (timeSpanFromStart < yearSec * 4) {
-        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 3) / 100 * COIN / 365; // 7%
+        nSubsidy = nCoinAge * COIN * (STAKE_RATE - 3) / 100  / 365; // 7%
     } else if (timeSpanFromStart < yearSec * 5) {
-        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 4) / 100 * COIN / 365; // 6%
+        nSubsidy = nCoinAge * COIN * (STAKE_RATE - 4) / 100  / 365; // 6%
     } else {
-        nSubsidy = nCoinAge * 1 * (STAKE_RATE - 5) / 100 * COIN / 365; // 5%
+        nSubsidy = nCoinAge * COIN * (STAKE_RATE - 5) / 100  / 365; // 5%
     }
-
+    {
+        static const CAmount TESTRATE = 0.10 * COIN; // year 0.01 %
+        CAmount testSubsidy = nCoinAge * 1 * TESTRATE / 365;
+        DbgMsg("year sec %d" , yearSec);
+        if(testSubsidy!=nSubsidy) {
+            DbgMsg("fail.... %i %i" ,testSubsidy, nSubsidy);
+        }
+    }
     if (pindexPrev != NULL && (pindexPrev->nMoneySupply + nSubsidy) >= MAX_MONEY) {
         LogPrintf("Max Money.... no more reward[pos\n");
         nSubsidy = 0;
