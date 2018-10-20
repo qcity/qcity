@@ -2899,6 +2899,7 @@ CAmount CWallet::GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarge
 
 DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
 {
+    LOCK2(cs_main, cs_wallet);
     if (!fFileBacked)
         return DB_LOAD_OK;
     fFirstRunRet = false;
