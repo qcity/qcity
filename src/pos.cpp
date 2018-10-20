@@ -291,14 +291,14 @@ CAmount GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, i
     } else {
         nSubsidy = nCoinAge * COIN * (STAKE_RATE - 5) / 100  / 365; // 5%
     }
-    {
-        static const CAmount TESTRATE = 0.10 * COIN; // year 0.01 %
-        CAmount testSubsidy = nCoinAge * 1 * TESTRATE / 365;
-        DbgMsg("year sec %d" , yearSec);
-        if(testSubsidy!=nSubsidy) {
-            DbgMsg("fail.... %i %i" ,testSubsidy, nSubsidy);
-        }
-    }
+    // {
+    //     static const CAmount TESTRATE = 0.10 * COIN; // year 0.01 %
+    //     CAmount testSubsidy = nCoinAge * 1 * TESTRATE / 365;
+    //     DbgMsg("year sec %d" , yearSec);
+    //     if(testSubsidy!=nSubsidy) {
+    //         DbgMsg("fail.... %i %i" ,testSubsidy, nSubsidy);
+    //     }
+    // }
     if (pindexPrev != NULL && (pindexPrev->nMoneySupply + nSubsidy) >= MAX_MONEY) {
         LogPrintf("Max Money.... no more reward[pos\n");
         nSubsidy = 0;
