@@ -42,7 +42,6 @@ void CacheKernel(std::map<COutPoint, CStakeCache>& cache, const COutPoint& prevo
 bool VerifySignature(const CTransaction& txFrom, const CTransaction& txTo, unsigned int nIn, unsigned int flags, int nHashType);
 
 uint64_t GetCoinAgeByTime(int64_t timespan, int64_t nValue  );
-bool GetCoinAge(const CTransaction& tx,  uint64_t& nCoinAge);
 bool TransactionGetCoinAge(CTransaction& transaction, uint64_t& nCoinAge);
 
 CAmount GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees);

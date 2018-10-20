@@ -94,7 +94,7 @@ bool CheckStakeKernelHash(const CBlockIndex* pindexPrev,
     CHashWriter ss(SER_GETHASH, 0);
     ss << pindexPrev->nStakeModifier << pindexPrev->nTime << prevout.hash << prevout.n << nTimeTx;
     uint256 hashProofOfStake = ss.GetHash();
-
+    
     // Now check if proof-of-stake hash meets target protocol
     if (UintToArith256(hashProofOfStake) / nValueIn > bnTarget)
         return false;
@@ -220,71 +220,7 @@ uint64_t GetCoinAgeByTime(int64_t timespan, int64_t nValue  ){
     arith_uint256 bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);
     return bnCoinDay.GetLow64();
 }
-// ppcoin: total coin age spent in transaction, in the unit of coin-days.
-// Only those coins meeting minimum age requirement counts. As those
-// transactions not in main chain are not currently indexed so we
-// might not find out about their coin age. Older transactions are
-// guaranteed to be in main chain by sync-checkpoint. This rule is
-// introduced to help nodes establish a consistent view of the coin
-// age (trust score) of competing branches.
-bool GetCoinAge(const CTransaction& tx,  uint64_t& nCoinAge)
-{
-	arith_uint256 bnCentSecond = 0;  // coin age in the unit of cent-seconds
-    nCoinAge = 0;
-
-    if (tx.IsCoinBase())
-        return true;
-
-    BOOST_FOREACH(const CTxIn& txin, tx.vin)
-    {
-        // First try finding the previous transaction in database
-        
-        CDiskTxPos txindex;
-        CMutableTransaction txPrevMu;
-        if (!ReadFromDisk(txPrevMu, txindex, *pblocktree, txin.prevout))
-            continue;  // previous transaction not in main chain
-        CTransaction txPrev(txPrevMu);
-        if (tx.nTime < txPrev.nTime)
-            return false;  // Transaction timestamp violation
-
-        
-        // Read block header
-        CBlock block;
-        const CDiskBlockPos& pos = CDiskBlockPos(txindex.nFile, txindex.nPos);
-        if (!ReadBlockFromDisk(block, pos, Params().GetConsensus()))
-            return false; // unable to read block of previous transaction
-        if (block.GetBlockTime() + Params().GetConsensus().nStakeMinAge > tx.nTime){  // 최소 시간... 15 sec
-            DbgMsg(" block: %d + %d > tx:%d  , gap %d" ,
-                block.GetBlockTime() ,
-                Params().GetConsensus().nStakeMinAge , 
-                tx.nTime ,
-               ( block.GetBlockTime() + Params().GetConsensus().nStakeMinAge) - tx.nTime);
-             
-            continue; // only count coins meeting min age requirement
-        }
-        // prev have not time...
-        if(txPrev.nTime <=0 ) { 
-            CBlock prvblock;
-            if(!ReadBlockFromDiskByTx(prvblock ,*pblocktree ,txPrev.GetHash() )){
-                txPrev.nTime = Params().GenesisBlock().GetBlockTime();
-            }else{ 
-                txPrev.nTime = prvblock.nTime;
-            }
-            
-        }
-        int64_t nValueIn = txPrev.vout[txin.prevout.n].nValue;
-        bnCentSecond += arith_uint256(nValueIn) * (tx.nTime-txPrev.nTime) / CENT;
-
-        LogPrint("coinage", "coin age nValueIn=%d nTimeDiff=%d - bnCentSecond=%s\n", nValueIn, tx.nTime - txPrev.nTime, bnCentSecond.ToString());
-    }
-
-    arith_uint256 bnCoinDay = bnCentSecond * CENT / COIN / (24 * 60 * 60);
-    LogPrint("coinage", "coin age bnCoinDay=%s  bnCoinSecond=%s  \n", 
-        bnCoinDay.ToString() ,
-        bnCentSecond.ToString() );
-    nCoinAge = bnCoinDay.GetLow64();
-    return true;
-}
+ 
 
 bool TransactionGetCoinAge(CTransaction& transaction, uint64_t& nCoinAge)
 {
