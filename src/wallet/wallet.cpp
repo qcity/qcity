@@ -4277,7 +4277,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
                 for (vector<CTransactionRef>::iterator it = block.vtx.begin(); it != block.vtx.end();)
                     if ((*it)->nTime > block.nTime) { it = block.vtx.erase(it); } else { ++it; }
 
-                block.vtx.insert(block.vtx.begin() + 1, MakeTransactionRef(txCoinStake));
+                block.vtx[1] = MakeTransactionRef(txCoinStake);
 
                 block.hashMerkleRoot = BlockMerkleRoot(block);
                 block.prevoutStake = block.vtx[1]->vin[0].prevout;
