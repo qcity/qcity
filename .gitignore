@@ -135,3 +135,6 @@ tmp/bitcoin-1.0.0/bin/bitcoin-cli
 .vscode/settings.json
 wallet.dat
 wallet.dat.*
+background.tiff
+background.tiff.png
+background.tiff@2x.png
