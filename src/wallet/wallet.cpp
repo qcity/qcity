@@ -4282,7 +4282,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
                 return key.Sign(block.GetHashWithoutSign(), block.vchBlockSig);
             }
         }else{
-            LogPrint("pos", "CreateCoinStake fail\n");    
+            LogPrint("pos", "CreateCoinStake skip\n");    
         }
         nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
         

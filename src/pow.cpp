@@ -14,6 +14,9 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params,bool fProofOfStake)
 {
+    if(pblock->IsProofOfOnline()) { 
+        return UintToArith256(params.powLimit).GetCompact() / 4;
+    }
     if(fProofOfStake||pblock->IsProofOfOnline()||pblock->IsProofOfStake()){
         return UintToArith256(params.powLimit).GetCompact();
     };

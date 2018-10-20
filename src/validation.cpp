@@ -3286,14 +3286,15 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
         // v2 
         if( chainparams.GetConsensus().IsV2Time( block.nTime )&&pindexPrev->nHeight > BLOCK_HEIGHT_INIT  ){
             if( ((pindexPrev->nHeight +1 ) % chainparams.GetConsensus().nProofOfOnlineInterval )==0) { // is must online block.
-                if(!block.IsProofOfOnline() && ( block.GetBlockTime() - pindexPrev->GetBlockTime() ) < chainparams.GetConsensus().nPowTargetSpacing * 3 ) { // %n block must online or block time space over 3 times of default space...
+                if(!block.IsProofOfOnline() && ( block.GetBlockTime() - pindexPrev->GetBlockTime() ) < chainparams.GetConsensus().nPowTargetSpacing * 4 ) { // %n block must online or block time space over 3 times of default space...
                     return state.Invalid(false, REJECT_INVALID, "ConnectBlock(): must online block");
                 }
             }else {
                 if( block.IsProofOfOnline() ){
                     return state.Invalid(false, REJECT_INVALID,  "ConnectBlock(): must pow block");
-                } else if( block.GetBlockTime() <  ( pindexPrev->GetBlockTime() +  chainparams.GetConsensus().nPowTargetSpacing/3)) {
-                    DbgMsg( "ConnectBlock(): early pow block current:%d , %d = %d - %d" ,
+                } else if( block.GetBlockTime() <  ( pindexPrev->GetBlockTime() +  chainparams.GetConsensus().nPowTargetSpacing/10)) {
+                    DbgMsg( "ConnectBlock(): early %s block current:%d , %d = %d - %d" ,
+                        block.IsProofOfStake()?"pos":"pow",
                         GetTime(),
                         block.GetBlockTime() - pindexPrev->GetBlockTime(),
                         block.GetBlockTime(), pindexPrev->GetBlockTime());
