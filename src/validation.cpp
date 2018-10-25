@@ -536,7 +536,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         int64_t nSigOpsCost = GetTransactionSigOpCost(tx, view, STANDARD_SCRIPT_VERIFY_FLAGS);
 
         CAmount nValueOut = tx.GetValueOut();
-        CAmount nFees = nValueIn-nValueOut;
+        CAmount nFees = (!tx.IsCoinStake())?nValueIn-nValueOut:0;
         // nModifiedFees includes any fee deltas from PrioritiseTransaction
         CAmount nModifiedFees = nFees;
         double nPriorityDummy = 0;
@@ -550,7 +550,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         bool fSpendsCoinbase = false;
         BOOST_FOREACH(const CTxIn &txin, tx.vin) {
             const CCoins *coins = view.AccessCoins(txin.prevout.hash);
-            if (coins->IsCoinBase()) {
+            if (coins->IsCoinBase()|| coins->IsCoinStake()) {
                 fSpendsCoinbase = true;
                 break;
             }
@@ -2293,7 +2293,7 @@ bool static DisconnectTip(CValidationState& state, const CChainParams& chainpara
             const CTransaction& tx = *it;
             // ignore validation errors in resurrected transactions
             CValidationState stateDummy;
-            if (tx.IsCoinBase() || !AcceptToMemoryPool(mempool, stateDummy, it, false, NULL, NULL, true)) {
+            if (tx.IsCoinBase() ||tx.IsCoinStake() ||  !AcceptToMemoryPool(mempool, stateDummy, it, false, NULL, NULL, true)) {
                 mempool.removeRecursive(tx, MemPoolRemovalReason::REORG);
             } else if (mempool.exists(tx.GetHash())) {
                 vHashUpdate.push_back(tx.GetHash());

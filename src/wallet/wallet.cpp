@@ -4257,7 +4257,7 @@ bool CWallet::SignPoSBlock(CBlock& block, CWallet& wallet, int64_t& nFees)
     {
         // 목표 비트로 n( 1에서 60?으로 수정) 번 코인을 찾는다.
         // int64_t nSearchInterval = nBestHeight+1 > 0 ? 1 : nSearchTime - nLastCoinStakeSearchTime;
-        if (wallet.CreateCoinStake(wallet, block.nBits, 60, nFees, txCoinStake, key))
+        if (wallet.CreateCoinStake(wallet, block.nBits, 1, nFees, txCoinStake, key))
         {
             // if have other tx allow time limit zero else allow time is pow block limit 
             if (( block.vtx.size()>1&&txCoinStake.nTime >= pindexBestHeader->GetPastTimeLimit()+1) )// 
@@ -4305,14 +4305,17 @@ void CWallet::AvailableCoinsForStaking(std::vector<COutput>& vCoins) const
             const CWalletTx* pcoin = &(*it).second;
 
             int nDepth = pcoin->GetDepthInMainChain();
-            if (nDepth < 1)
+            if (nDepth < 1) { 
                 continue;
+            }
             // Filtering by tx timestamp instead of block timestamp may give false positives but never false negatives
-            if (pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge > nSpendTime)
+            if (pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge > nSpendTime) { 
                 continue;
+            }
 			
-            if (pcoin->GetBlocksToMaturity() > 0)
+            if (pcoin->GetBlocksToMaturity() > 0) {
                 continue;
+            }
             if (pcoin->isAbandoned())
                 continue;
             for (unsigned int i = 0; i < pcoin->tx->vout.size(); i++) {
@@ -4323,6 +4326,12 @@ void CWallet::AvailableCoinsForStaking(std::vector<COutput>& vCoins) const
                                             ((mine & ISMINE_SPENDABLE) != ISMINE_NO) ||
                                             (mine & ISMINE_WATCH_SOLVABLE) != ISMINE_NO,
                                             (mine & (ISMINE_SPENDABLE | ISMINE_WATCH_SOLVABLE)) != ISMINE_NO));
+                }else{
+                    // LogPrint("pos" , "skip spent %d : spend:%s ismine:%s , islock:%s %d \n" ,pcoin->GetValueOut(),
+                    //     IsSpent(wtxid, i)?"true":"false",
+                    //     mine != ISMINE_NO?"true":"false",
+                    //     IsLockedCoin((*it).first, i)?"true":"false",
+                    //     (pcoin->tx->vout[i].nValue > 0)   );
                 }
             }
         }
@@ -4351,7 +4360,7 @@ bool CWallet::SelectCoinsForStaking(CAmount& nTargetValue,   std::set<std::pair<
         int64_t n = pcoin->tx->vout[i].nValue;
         // skip early tx.
         if( pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge >current ){ 
-            DbgMsg("Skip too early tx ...  %d + %d > %d (gap: %d min) ,coin:%d " ,
+            LogPrint("pos","Skip too early tx ...  %d + %d > %d (gap: %d min) ,coin:%d \n" ,
                 pcoin->GetTxTime() , Params().GetConsensus().nStakeMinAge , current ,
                 ((pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge) - current)/60 ,
                 n / COIN);
@@ -4359,8 +4368,12 @@ bool CWallet::SelectCoinsForStaking(CAmount& nTargetValue,   std::set<std::pair<
         }
         // check coin age
         int64_t timespan = current - pcoin->GetTxTime();
+        if(n<=0){
+            continue;
+        }
         int64_t coinAge  = GetCoinAgeByTime(timespan, n);
         if( coinAge<=0){
+            // LogPrint("pos" , "coinAge <= 0 , age:%d timespan:%d, n:%d\n" , coinAge,timespan,n);
             continue;
         }
 
@@ -4458,18 +4471,20 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     CAmount nTargetValue = nBalance - nReserveBalance;
     //DbgMsg("스태이킹할 코인 선택 targetValue %d = %d - %d" , nTargetValue , nBalance , nReserveBalance);
     if (!SelectCoinsForStaking(nTargetValue, setCoins, nValueIn)) { 
+        LogPrint("pos" , "select Coin fail\n");
         return false;
     }
 
-    if (setCoins.empty())
+    if (setCoins.empty()){
+        LogPrint("pos" , "select coin empty\n");
     	return false;
+    }
 
      
 
     int64_t nCredit = 0;
     CScript scriptPubKeyKernel;
     
-    int idx1 = 0;
     // enum wallet tx..
     BOOST_FOREACH(const PAIRTYPE(const CWalletTx*, unsigned int)& pcoin, setCoins)
     {
