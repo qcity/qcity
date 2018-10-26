@@ -233,7 +233,7 @@ bool Consensus::CheckTxInputs(const CTransaction& tx, CValidationState& state, c
         assert(coins);
 
         // If prev is coinbase, check that it's matured
-        if (coins->IsCoinBase() || coins->IsCoinStake()) {
+        if (coins->IsCoinBase() ) { // || coins->IsCoinStake()) { coinstake is set to coinbase in ccoins
             if (nSpendHeight - coins->nHeight < Params().COINBASE_MATURITY)
                 return state.Invalid(false,
                     REJECT_INVALID, "bad-txns-premature-spend-of-coinbase",

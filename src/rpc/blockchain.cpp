@@ -1167,7 +1167,7 @@ UniValue gettxout(const JSONRPCRequest& request)
     ret.push_back(Pair("version", coins.nVersion));
     ret.push_back(Pair("coinbase", coins.fCoinBase));
     
-    ret.push_back(Pair("coinstake", coins.fCoinStake));
+    // ret.push_back(Pair("coinstake", coins.fCoinStake)); TODO this must sad to insight...
 
     return ret;
 }

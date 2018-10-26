@@ -550,7 +550,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         bool fSpendsCoinbase = false;
         BOOST_FOREACH(const CTxIn &txin, tx.vin) {
             const CCoins *coins = view.AccessCoins(txin.prevout.hash);
-            if (coins->IsCoinBase()|| coins->IsCoinStake()) {
+            if (coins->IsCoinBase()){ //|| coins->IsCoinStake()) {
                 fSpendsCoinbase = true;
                 break;
             }
@@ -1188,7 +1188,7 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, CTxUndo &txund
                 CTxInUndo& undo = txundo.vprevout.back();
                 undo.nHeight = coins->nHeight;
                 undo.fCoinBase = coins->fCoinBase;
-                undo.fCoinStake = coins->fCoinStake;
+//                undo.fCoinStake = coins->fCoinStake;
                 undo.nVersion = coins->nVersion;
             }
         }

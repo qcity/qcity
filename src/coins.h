@@ -78,7 +78,7 @@ class CCoins
 public:
     //! whether transaction is a coinbase
     bool fCoinBase;
-    bool fCoinStake;
+    // bool fCoinStake;
     //! unspent transaction outputs; spent outputs are .IsNull(); spent outputs at the end of the array are dropped
     std::vector<CTxOut> vout;
 
@@ -90,8 +90,8 @@ public:
     int nVersion;
     
     void FromTx(const CTransaction &tx, int nHeightIn) {
-        fCoinBase = tx.IsCoinBase();
-        fCoinStake = tx.IsCoinStake();
+        fCoinBase = tx.IsCoinBase()|| tx.IsCoinStake(); // fCoinBase used for spend imature act as same coinbase coinstake
+        //fCoinStake = tx.IsCoinStake();
         vout = tx.vout;
         nHeight = nHeightIn;
         nVersion = tx.nVersion;
@@ -105,14 +105,14 @@ public:
 
     void Clear() {
         fCoinBase = false;
-        fCoinStake = false;
+        // fCoinStake = false;
         std::vector<CTxOut>().swap(vout);
         nHeight = 0;
         nVersion = 0;
     }
 
     //! empty constructor
-    CCoins() : fCoinBase(false),fCoinStake(false), vout(0), nHeight(0), nVersion(0) { }
+    CCoins() : fCoinBase(false), vout(0), nHeight(0), nVersion(0) { }
 
     //!remove spent outputs at the end of vout
     void Cleanup() {
@@ -132,7 +132,7 @@ public:
 
     void swap(CCoins &to) {
         std::swap(to.fCoinBase, fCoinBase);
-        std::swap(to.fCoinStake, fCoinStake);
+        // std::swap(to.fCoinStake, fCoinStake);
         to.vout.swap(vout);
         std::swap(to.nHeight, nHeight);
         std::swap(to.nVersion, nVersion);
@@ -157,10 +157,7 @@ public:
     bool IsCoinBase() const {
         return fCoinBase;
     }
-    bool IsCoinStake() const
-    {
-        return fCoinStake;
-    }
+    
     template<typename Stream>
     void Serialize(Stream &s) const {
         unsigned int nMaskSize = 0, nMaskCode = 0;
