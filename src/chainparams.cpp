@@ -147,7 +147,6 @@ public:
 
         vSeeds.clear();
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("seed0", "chain001.bitchk.com",true));
         vSeeds.push_back(CDNSSeedData("seed1", "qct001.bitchk.com",true));
         vSeeds.push_back(CDNSSeedData("seed2", "seed-qct.bitchk.com",true));
         
