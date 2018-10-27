@@ -58,7 +58,7 @@ UniValue JSONRPCError(int code, const string& message)
     UniValue error(UniValue::VOBJ);
     error.push_back(Pair("code", code));
     error.push_back(Pair("message", message));
-    DbgMsg("[%d] %s" ,code, message);
+    LogPrint("rpc","[%d] %s\n" ,code, message);
     return error;
 }
 
