@@ -54,14 +54,14 @@ CAmount nMinimumInputValue = 0;
 
 /**
  * min split tx 
- * 100 까지만 하나의 tx로 합친다.
+ * 10,000 까지만 하나의 tx로 합친다.
  * 
  */
-static int64_t GetStakeCombineThreshold() { return 100 * COIN; }
+static int64_t GetStakeCombineThreshold() { return 10000 * COIN; }
 /**
- *  200 이하는 나누지 않는다.
+ *  1,000,000 이하는 나누지 않는다.
  */
-static int64_t GetStakeSplitThreshold() { return 2 * GetStakeCombineThreshold(); }
+static int64_t GetStakeSplitThreshold() { return 10 * GetStakeCombineThreshold(); }
 
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)
@@ -4337,7 +4337,9 @@ void CWallet::AvailableCoinsForStaking(std::vector<COutput>& vCoins) const
         }
     }
 }
-
+bool coinTimeSort(COutput a,COutput b){
+    return a.tx->GetTxTime() < b.tx->GetTxTime() ;
+}
 // Select some coins without random shuffle or best subset approximation
 bool CWallet::SelectCoinsForStaking(CAmount& nTargetValue,   std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, CAmount& nValueRet) const
 {
@@ -4357,23 +4359,24 @@ bool CWallet::SelectCoinsForStaking(CAmount& nTargetValue,   std::set<std::pair<
             break;
 
         int64_t current = GetTime();
-        int64_t n = pcoin->tx->vout[i].nValue;
+        
         // skip early tx.
         if( pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge >current ){ 
-            LogPrint("pos","Skip too early tx ...  %d + %d > %d (gap: %d min) ,coin:%d \n" ,
-                pcoin->GetTxTime() , Params().GetConsensus().nStakeMinAge , current ,
-                ((pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge) - current)/60 ,
-                n / COIN);
+            // LogPrint("pos","Skip too early tx ...  %d + %d > %d (gap: %d min) ,coin:%d \n" ,
+            //     pcoin->GetTxTime() , Params().GetConsensus().nStakeMinAge , current ,
+            //     ((pcoin->GetTxTime() + Params().GetConsensus().nStakeMinAge) - current)/60 ,
+            //     n / COIN);
             continue;
         }
-        // check coin age
-        int64_t timespan = current - pcoin->GetTxTime();
+        int64_t n = pcoin->tx->vout[i].nValue;
         if(n<=0){
             continue;
         }
+        // check coin age 1 * cent , 60 * 60 * 24 >timespan
+        int64_t timespan = current - pcoin->GetTxTime();
+        
         int64_t coinAge  = GetCoinAgeByTime(timespan, n);
         if( coinAge<=0){
-            // LogPrint("pos" , "coinAge <= 0 , age:%d timespan:%d, n:%d\n" , coinAge,timespan,n);
             continue;
         }
 
@@ -4393,8 +4396,13 @@ bool CWallet::SelectCoinsForStaking(CAmount& nTargetValue,   std::set<std::pair<
             nValueRet += coin.first;
         }
     }
+    // std::sort(vCoins.begin(), vCoins.end(), coinTimeSort);
+    // BOOST_FOREACH(COutput output, vCoins) {
+    //     DbgMsg("nTime :%d " , output.tx->GetTxTime());
+    // }
     return true;
 }
+
 
 bool CWallet::HaveAvailableCoinsForStaking() const
 {
@@ -4571,7 +4579,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
         {
             // Stop adding more inputs if already too many inputs
-            if (txNew.vin.size() >= 30)
+            if (txNew.vin.size() >= 50)
                 break;
             // Stop adding inputs if reached reserve limit
             if (nCredit + pcoin.first->tx->vout[pcoin.second].nValue > nBalance - nReserveBalance)
