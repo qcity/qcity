@@ -1957,6 +1957,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount blockReward = 0;
     if( pindex->IsProofOfOnline()) {
         blockReward = nFees;
+        pindex->nMoneySupply = (pindex->pprev? pindex->pprev->nMoneySupply : 0);
     } else if (block.IsProofOfStake()) {
         uint64_t nCoinAge;
         if (!TransactionGetCoinAge(const_cast<CTransaction&>(*block.vtx[1]), nCoinAge))

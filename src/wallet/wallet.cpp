@@ -2293,7 +2293,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
         LogPrint("selectcoins", "SelectCoins() best subset: ");
         for (unsigned int i = 0; i < vValue.size(); i++)
             if (vfBest[i])
-                LogPrint("selectcoins", "%s ", FormatMoney(vValue[i].first));
+                LogPrint("selectcoins", "%s \n", FormatMoney(vValue[i].first));
         LogPrint("selectcoins", "total %s\n", FormatMoney(nBest));
     }
 
