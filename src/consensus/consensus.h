@@ -27,8 +27,6 @@ static const CAmount PREMINE_MONEY_COIN =  390000000 * COIN ;//39000000
 static const CAmount BLOCK_REWARD_COIN = 6 * COIN; 
 static const CAmount BLOCK_REWARD_COIN_100 = 0.06 * COIN ; 
 
-static const  int64_t POO_START_TIME = 2537237800;//2018-09-18 2:30 UTC
-static const  int64_t POS_START_TIME = 2538629136;//2018-10-04 6:00 UTC
 // static const uint8_t ONLINE_BLOCK_VERSION = 0xA0;
 static const int VERSION_BLOCK_SIG =  1024;
 static const int32_t TX_VERSION_STAKE=3;
