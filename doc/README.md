@@ -5,7 +5,7 @@ Setup
 ---------------------
 Qcity Core is the original Qcity client and it builds the backbone of the network. However, it downloads and stores the entire history of Qcity transactions (which is currently several GBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download Qcity Core, visit [qcitynu.com](http://www.qcity.org).
+To download Qcity Core, visit [qcitynu.com](http://www.qcitycoin.org).
 
 Running
 ---------------------

@@ -511,7 +511,7 @@ std::string HelpMessage(HelpMessageMode mode)
 std::string LicenseInfo()
 {
     const std::string URL_SOURCE_CODE = "<https://github.com/qcity/qcity>";
-    const std::string URL_WEBSITE = "<http://www.qcity.org>";
+    const std::string URL_WEBSITE = "<http://www.qcitycoin.org>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2017, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +
