@@ -57,11 +57,11 @@ CAmount nMinimumInputValue = 0;
  * 10,000 까지만 하나의 tx로 합친다.
  * 
  */
-static int64_t GetStakeCombineThreshold() { return 10000 * COIN; }
+static int64_t GetStakeCombineThreshold() { return 100 * COIN; }
 /**
  *  1,000,000 이하는 나누지 않는다.
  */
-static int64_t GetStakeSplitThreshold() { return 10 * GetStakeCombineThreshold(); }
+static int64_t GetStakeSplitThreshold() { return 2 * GetStakeCombineThreshold(); }
 
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)
