@@ -433,11 +433,13 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
         READWRITE(nMoneySupply);
-        if((this->nVersion &VERSION_BLOCK_SIG) ){ 
+        // force wrtie stakemodifier
+        // stakemodifier not deliver block, just save index
+        // if((this->nVersion &VERSION_BLOCK_SIG) ){ 
             READWRITE(vchBlockSig);
             READWRITE(nStakeModifier);
             READWRITE(prevoutStake);
-        }
+        // }
     }
 
     uint256 GetBlockHash() const

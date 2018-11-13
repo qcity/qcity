@@ -4031,7 +4031,7 @@ bool LoadBlockIndex(const CChainParams& chainparams)
 {
     // Load block index from databases
     if (!fReindex && !LoadBlockIndexDB(chainparams)){ 
-        exit(0);
+        // exit(0);
         return false;
     }
     return true;
