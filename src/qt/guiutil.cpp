@@ -420,6 +420,14 @@ void openDebugLogfile()
     if (boost::filesystem::exists(pathDebug))
         QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
 }
+void openDataFolder()
+{
+    boost::filesystem::path pathDebug = GetDataDir() ;
+
+    /* Open debug.log with the associated application */
+    if (boost::filesystem::exists(pathDebug))
+        QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
+}
 
 void SubstituteFonts(const QString& language)
 {

@@ -141,6 +141,20 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="2" rowspan="1">
+          <widget class="QPushButton" name="openDataFolderButton">
+           <property name="toolTip">
+            <string>Open Data Folder</string>
+           </property>
+           <property name="text">
+            <string>Open Data Folder</string>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+          </widget>
+        </item>
+        
        <item row="5" column="0">
         <widget class="QLabel" name="label_13">
          <property name="text">

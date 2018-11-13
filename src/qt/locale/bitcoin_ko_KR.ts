@@ -1683,10 +1683,14 @@
     <message>
         <source>Out:</source>
         <translation>Out:</translation>
-    </message>
+    </message> 
     <message>
         <source>Debug log file</source>
         <translation>로그 파일 디버그</translation>
+    </message>
+    <message>
+        <source>Open Data Folder</source>
+        <translation>데이터 폴더 열기</translation>
     </message>
     <message>
         <source>Clear console</source>

@@ -896,9 +896,15 @@ void RPCConsole::on_tabWidget_currentChanged(int index)
         clearSelectedNode();
 }
 
+
+void RPCConsole::on_openDataFolderButton_clicked()
+{
+    GUIUtil::openDataFolder();
+}
 void RPCConsole::on_openDebugLogfileButton_clicked()
 {
     GUIUtil::openDebugLogfile();
+    
 }
 
 void RPCConsole::scrollToEnd()
