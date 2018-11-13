@@ -124,7 +124,9 @@ public:
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000042daec57b49294");
         // By default assume that the signatures in ancestors of this block are valid.
         //consensus.defaultAssumeValid = uint256S("0x1673fa904a93848eca83d5ca82c7af974511a7e640e22edc2976420744f2e56a"); //1155631
-        consensus.defaultAssumeValid = uint256S("0x338dabdb0743eaf486664a9cbe2df3a36ea4c3d31b3cbf9c75d3f05ea33cf4ac");// 547850
+        //consensus.defaultAssumeValid = uint256S("0x338dabdb0743eaf486664a9cbe2df3a36ea4c3d31b3cbf9c75d3f05ea33cf4ac");// 547850
+        consensus.defaultAssumeValid = uint256S("0x2e56baaa3879c80328725b3f06c1c5963ac9a52afff339e805143f54f8d3c0e2");// 604230
+        
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
@@ -178,6 +180,8 @@ public:
             (  300000, uint256S("0x13f7a9b32259e07a963bcbfb073fb533781d0a9466c3821314eb22721b2e7a15"))
             (  400000, uint256S("0x49dfeb021332055258293761bf5ff306e602cd1fd03cb40c5fb00fafe24dd48a"))
             (  545000, uint256S("0x16e2f0bf0bc03428efa29c79fb90401317549853c3844ec4a0f1da142a17cd39"))
+            (  604230, uint256S("0x2e56baaa3879c80328725b3f06c1c5963ac9a52afff339e805143f54f8d3c0e2"))
+            
         };
 
         chainTxData = ChainTxData{
